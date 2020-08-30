@@ -43,9 +43,11 @@ val country = phoneNumberKit.getCountry(90)
 ```
 
 ## Demo
-<img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss1.jpg" width="220" />
-<img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss2.jpg" width="220" />
-<img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss3.jpg" width="220" />
+Edittext Format            |  Edittext Format         |  Country Code Picker
+:-------------------------:|:-------------------------:-------------------------:
+<img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss1.jpg" width="250" /> |  <img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss2.jpg" width="250" />
+) | <img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss3.jpg" width="250" />
+
 
 ## Conception
 This library is based on Google's lilPhoneNumber library (https://github.com/google/libphonenumber).
