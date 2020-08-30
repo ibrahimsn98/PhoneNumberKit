@@ -43,10 +43,18 @@ val country = phoneNumberKit.getCountry(90)
 ```
 
 ## Demo
-Edittext Format            |  Edittext Format         |  Country Code Picker
-:-------------------------:|:-------------------------:-------------------------:
-<img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss1.jpg" width="250" /> |  <img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss2.jpg" width="250" />
-) | <img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss3.jpg" width="250" />
+<table>
+	<tr>
+		<th>Country Code Picker</th>
+		<th>Format Example</th>
+		<th>Format Example</th>
+ 	</tr>
+ 	<tr>
+  		<td><img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss3.jpg" width="250" /></td>
+   		<td><img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss1.jpg" width="250" /></td>
+		<td><img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss2.jpg" width="250" /></td>
+ 	</tr>
+</table>
 
 
 ## Conception
