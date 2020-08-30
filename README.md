@@ -8,7 +8,10 @@ Based on Google's libphonenumber.
 | |Features |
 --------------------------|------------------------------------------------------------
 :phone: | Validate, normalize and extract the elements of any phone number string.
-:tr: | Convert country codes to country names and vice versa
+:dart: | Convert raw phone number to formatted phone number string.
+:bookmark: | Country code selection bottom sheet
+:pushpin: | Convert country codes to country names and vice versa.
+:tr: | Get country flag icon for given iso2 code.
 
 
 ## Usage
@@ -56,6 +59,11 @@ val country = phoneNumberKit.getCountry(90)
  	</tr>
 </table>
 
+## Checklist
+- [ ] Search for country codes
+- [ ] Dark theme for country code selector
+- [ ] Phone number validation indicator
+- [ ] Better performance with coroutines
 
 ## Conception
 This library is based on Google's lilPhoneNumber library (https://github.com/google/libphonenumber).
