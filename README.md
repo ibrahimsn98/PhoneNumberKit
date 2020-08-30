@@ -45,6 +45,13 @@ val country = phoneNumberKit.getCountry(90)
 ## Demo
 
 
+## Conception
+This library is based on Google's lilPhoneNumber library ((https://github.com/google/libphonenumber)[https://github.com/google/libphonenumber])
+Inspired from PhoneNumberKit Swift library by (marmelloy)[https://github.com/marmelroy] ((https://github.com/marmelroy/PhoneNumberKit)[https://github.com/marmelroy/PhoneNumberKit])
+
+## License
+PhoneNumberKit is available under the Apache license. See the LICENSE file for more info.
+
 
 
 
