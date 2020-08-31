@@ -21,6 +21,8 @@ Android **Kotlin** library to parse and format international phone numbers. Base
 Create a phoneNumberKit instance and attach it to an editTextLayout. That's all you have to do.
 ```
 val phoneNumberKit = PhoneNumberKit(this) // Requires context
+
+phoneNumberKit.attachToInput(textField, 1)
 ```
 To setup with country code selection bottom sheet
 ```
