@@ -57,8 +57,8 @@ val country = phoneNumberKit.getCountry(90)
 		<th>Format Example</th>
  	</tr>
  	<tr>
-  		<td><img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss3.jpg" width="250" /></td>
-   		<td><img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss1.jpg" width="250" /></td>
+  		<td><img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss1.jpg" width="250" /></td>
+   		<td><img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss3.jpg" width="250" /></td>
 		<td><img src="https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/art/ss2.jpg" width="250" /></td>
  	</tr>
 </table>
