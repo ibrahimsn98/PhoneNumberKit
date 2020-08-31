@@ -7,19 +7,16 @@ import android.text.InputType
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
-import com.google.i18n.phonenumbers.NumberParseException
-import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber
 import me.ibrahimsn.lib.bottomsheet.CountryPickerBottomSheet
+import me.ibrahimsn.lib.core.Core
 import me.ibrahimsn.lib.util.PhoneNumberTextWatcher
 import me.ibrahimsn.lib.util.PhoneNumberValidator
 import me.ibrahimsn.lib.util.prependPlus
 import me.ibrahimsn.lib.util.startsWithPlus
-import java.util.*
 
 class PhoneNumberKit(private val context: Context) {
 
-    private var phoneUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
+    private val core = Core()
 
     private var input: TextInputLayout? = null
 
@@ -46,12 +43,14 @@ class PhoneNumberKit(private val context: Context) {
                     rawInput = text.prependPlus()
                 }
 
-                val parsedNumber = parsePhoneNumber(rawInput)
+                val parsedNumber = core.parsePhoneNumber(rawInput, country?.iso2)
 
-                formatPhoneNumber(parsedNumber)?.let { number ->
+                // Update input text as formatted phone number
+                core.formatPhoneNumber(parsedNumber)?.let { number ->
                     rawInput = number
                 }
 
+                // Update country flag and mask if detected as a different one
                 if (country == null || country?.countryCode != parsedNumber?.countryCode) {
                     setCountry(getCountry(parsedNumber?.countryCode))
                 }
@@ -63,6 +62,7 @@ class PhoneNumberKit(private val context: Context) {
         country?.let {
             this.country = country
 
+            // Clear input if a country code selected manually
             if (isManual) {
                 rawInput = country.countryCode.prependPlus()
             }
@@ -73,7 +73,7 @@ class PhoneNumberKit(private val context: Context) {
             }
 
             // Set text length limit according to the example phone number
-            formatPhoneNumber(getExampleNumber(country.iso2))?.let { number ->
+            core.formatPhoneNumber(core.getExampleNumber(country.iso2))?.let { number ->
                 input?.editText?.filters = arrayOf(InputFilter.LengthFilter(number.length))
             }
         }
@@ -91,6 +91,7 @@ class PhoneNumberKit(private val context: Context) {
         input.isStartIconCheckable = true
         input.setStartIconTintList(null)
 
+        // Set initial country
         setCountry(getCountry(defaultCountry) ?: Countries.list[0], true)
     }
 
@@ -109,41 +110,44 @@ class PhoneNumberKit(private val context: Context) {
     }
 
     /**
-     * Provides an example phone number according to country iso2
+     * Parses raw phone number into phone object
      */
-    fun getExampleNumber(iso2: String?): PhoneNumber? {
-        return try {
-            phoneUtil.getExampleNumberForType(
-                iso2?.toUpperCase(Locale.ROOT),
-                PhoneNumberUtil.PhoneNumberType.MOBILE
+    fun parsePhoneNumber(number: String?, defaultRegion: String?): Phone? {
+        core.parsePhoneNumber(number, defaultRegion)?.let { phone ->
+            return Phone(
+                nationalNumber = phone.nationalNumber,
+                countryCode = phone.countryCode,
+                rawInput = phone.rawInput,
+                numberOfLeadingZeros = phone.numberOfLeadingZeros
             )
-        } catch (e: Exception) {
-            null
         }
-    }
-
-    fun parsePhoneNumber(number: String?): PhoneNumber? {
-        val defaultRegion = if (country != null) country?.iso2?.toUpperCase(Locale.ROOT) else ""
-        return try {
-            phoneUtil.parseAndKeepRawInput(number, defaultRegion)
-        } catch(e: NumberParseException) {
-            null
-        }
-    }
-
-    fun formatPhoneNumber(phoneNumber: PhoneNumber?): String? {
-        return try {
-            phoneUtil.format(
-                phoneNumber,
-                PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL
-            )
-        } catch (e: Exception) {
-            null
-        }
+        return null
     }
 
     /**
-     * Provides country flag icon for given country iso2
+     * Formats raw phone number into international phone
+     */
+    fun formatPhoneNumber(number: String?, defaultRegion: String?): String? {
+        return core.formatPhoneNumber(core.parsePhoneNumber(number, defaultRegion))
+    }
+
+    /**
+     * Provides an example phone number according to country iso2 code
+     */
+    fun getExampleNumber(iso2: String?): Phone? {
+        core.getExampleNumber(iso2)?.let { phone ->
+            return Phone(
+                nationalNumber = phone.nationalNumber,
+                countryCode = phone.countryCode,
+                rawInput = phone.rawInput,
+                numberOfLeadingZeros = phone.numberOfLeadingZeros
+            )
+        }
+        return null
+    }
+
+    /**
+     * Provides country flag icon for given country iso2 code
      */
     fun getFlagIcon(iso2: String?): Drawable? {
         return try {

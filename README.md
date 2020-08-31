@@ -34,15 +34,25 @@ val exampleNumber = phoneNumberKit.getExampleNumber("tr")
 ```
 To parse raw text to phone number and receive country code, national number
 ```
-val phoneNumber = phoneNumberKit.parsePhoneNumber("+905066120000")
+val parsedNumber = phoneNumberKit.parsePhoneNumber(
+    number = "1266120000",
+    defaultRegion = "us"
+)
+
+parsedNumber?.nationalNumber
+parsedNumber?.countryCode
+parsedNumber?.numberOfLeadingZeros
 ```
-To convert phone number object into formatted phone number string
+To convert raw text to formatted phone number string
 ```
-val formattedNumber = phoneNumberKit.formatPhoneNumber(phoneNumber)
+val formattedNumber = phoneNumberKit.formatPhoneNumber(
+    number = "1266120000",
+    defaultRegion = "us"
+)
 ```
 To receive a country **flag icon** for given iso2 code
 ```
-val flag = phoneNumberKit.getFlagIcon("tr")
+val flag = phoneNumberKit.getFlagIcon("ca")
 ```
 To receive country name or iso2 code from given **country code**
 ```
@@ -82,9 +92,11 @@ dependencies {
 
 ## Checklist
 - [ ] Search for country codes
-- [ ] Dark theme for country code selector
+- [ ] Custom list item layout support
 - [ ] Phone number validation indicator
 - [ ] Better performance with coroutines
+- [ ] Dark theme
+- [ ] Tests
 
 ## Conception
 This library is based on Google's lilPhoneNumber library (https://github.com/google/libphonenumber).
