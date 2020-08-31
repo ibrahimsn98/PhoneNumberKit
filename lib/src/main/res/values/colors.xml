@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorBottomSheetBackground">#f5f5f5</color>
+    <color name="colorBottomSheetListBackground">#ffffff</color>
+
+</resources>

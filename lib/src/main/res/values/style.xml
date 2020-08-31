@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style
+        name="ThemeOverlay.PhoneNumberKit.BottomSheetDialog"
+        parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.PhoneNumberKit.BottomSheet</item>
+        <item name="colorSurface">@color/colorBottomSheetBackground</item>
+    </style>
+
+    <style name="Widget.PhoneNumberKit.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.PhoneNumberKit</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.PhoneNumberKit">
+        <item name="cornerSize">24dp</item>
+        <item name="cornerFamily">rounded</item>
+    </style>
+
+</resources>
