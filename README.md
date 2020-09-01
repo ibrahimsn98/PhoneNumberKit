@@ -99,9 +99,10 @@ dependencies {
 - [ ] Tests
 
 ## Conception
-This library is based on Google's lilPhoneNumber library (https://github.com/google/libphonenumber).
-
-Inspired from PhoneNumberKit Swift library by [marmelloy](https://github.com/marmelroy) (https://github.com/marmelroy/PhoneNumberKit).
+- This library is based on Google's lilPhoneNumber library (https://github.com/google/libphonenumber)
+- Inspired from PhoneNumberKit Swift library by [marmelloy](https://github.com/marmelroy) (https://github.com/marmelroy/PhoneNumberKit)
+- Flag images from [region-flags](https://github.com/behdad/region-flags)
+- Original country data from mledoze's [World countries in JSON, CSV and XML](https://github.com/mledoze/countries)
 
 ## License
 PhoneNumberKit is available under the Apache license. See the [LICENSE](https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/LICENSE) file for more info.
