@@ -7,18 +7,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingVertical="20dp"
-        android:paddingHorizontal="18dp">
+        android:orientation="horizontal"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="20dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="16sp"
+            android:text="Country Code"
             android:textColor="#232425"
-            android:text="Country Code" />
+            android:textSize="16sp" />
 
         <ImageButton
             android:id="@+id/imageButtonClose"
@@ -28,6 +28,16 @@
             android:src="@drawable/ic_close_24dp" />
 
     </LinearLayout>
+
+    <EditText
+        android:id="@+id/editTextSearch"
+        style="@style/SearchTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/search_hint"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="20dp"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

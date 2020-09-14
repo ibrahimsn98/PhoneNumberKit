@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 import me.ibrahimsn.lib.bottomsheet.CountryPickerBottomSheet
+import me.ibrahimsn.lib.bottomsheet.CountryPickerConfig
 import me.ibrahimsn.lib.core.Core
 import me.ibrahimsn.lib.util.PhoneNumberTextWatcher
 import me.ibrahimsn.lib.util.PhoneNumberValidator
@@ -36,7 +37,7 @@ class PhoneNumberKit(private val context: Context) {
     val isValid: Boolean
         get() = PhoneNumberValidator.validate(rawInput)
 
-    private val textWatcher = object: PhoneNumberTextWatcher() {
+    private val textWatcher = object : PhoneNumberTextWatcher() {
         override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
             if (input?.tag != Constants.VIEW_TAG) {
                 if (!text.isNullOrEmpty() && !text.startsWithPlus()) {
@@ -98,9 +99,9 @@ class PhoneNumberKit(private val context: Context) {
     /**
      * Sets up country code picker bottomSheet
      */
-    fun setupCountryPicker(activity: AppCompatActivity) {
+    fun setupCountryPicker(activity: AppCompatActivity, config: CountryPickerConfig) {
         input?.setStartIconOnClickListener {
-            CountryPickerBottomSheet.newInstance().apply {
+            CountryPickerBottomSheet.newInstance(config).apply {
                 onCountrySelectListener = { country ->
                     setCountry(country, true)
                 }
@@ -151,11 +152,13 @@ class PhoneNumberKit(private val context: Context) {
      */
     fun getFlagIcon(iso2: String?): Drawable? {
         return try {
-            ContextCompat.getDrawable(context, context.resources.getIdentifier(
-                "country_flag_$iso2",
-                "drawable",
-                context.packageName
-            ))
+            ContextCompat.getDrawable(
+                context, context.resources.getIdentifier(
+                    "country_flag_$iso2",
+                    "drawable",
+                    context.packageName
+                )
+            )
         } catch (e: Exception) {
             e.printStackTrace()
             null
