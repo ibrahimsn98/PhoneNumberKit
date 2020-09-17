@@ -27,10 +27,10 @@ class PhoneNumberKit(private val context: Context) {
         set(value) {
             input?.tag = Constants.VIEW_TAG
             input?.editText?.setText(value)
-            input?.tag = null
             value?.let {
                 input?.editText?.setSelection(value.length)
             }
+            input?.tag = null
         }
 
     val isValid: Boolean
@@ -45,14 +45,14 @@ class PhoneNumberKit(private val context: Context) {
 
                 val parsedNumber = core.parsePhoneNumber(rawInput, country?.iso2)
 
-                // Update input text as formatted phone number
-                core.formatPhoneNumber(parsedNumber)?.let { number ->
-                    rawInput = number
-                }
-
                 // Update country flag and mask if detected as a different one
                 if (country == null || country?.countryCode != parsedNumber?.countryCode) {
                     setCountry(getCountry(parsedNumber?.countryCode))
+                }
+
+                // Update input text as formatted phone number
+                core.formatPhoneNumber(parsedNumber)?.let { number ->
+                    rawInput = number
                 }
             }
         }

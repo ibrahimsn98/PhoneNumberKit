@@ -39,5 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         // Provides country name, iso2 for given country code
         val country = phoneNumberKit.getCountry(90)
+
+        editText.setText("+905066840880")
     }
 }
