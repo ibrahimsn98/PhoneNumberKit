@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -14,9 +15,9 @@ import me.ibrahimsn.lib.R
 
 class CountryPickerBottomSheet: BottomSheetDialogFragment() {
 
-    private val countryAdapter = CountryAdapter()
+    private var itemAdapter: CountryAdapter? = null
 
-    var onCountrySelectListener: ((Country?) -> Unit)? = null
+    var onCountrySelectedListener: ((Country?) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,17 +41,20 @@ class CountryPickerBottomSheet: BottomSheetDialogFragment() {
         recyclerView.apply {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             layoutManager = LinearLayoutManager(context)
-            adapter = countryAdapter
-        }
-        countryAdapter.apply {
-            setup(Countries.list)
-            onItemClickListener = {
-                onCountrySelectListener?.invoke(it)
-                dismiss()
-            }
+            adapter = itemAdapter
         }
         imageButtonClose.setOnClickListener {
             dismiss()
+        }
+    }
+
+    fun setup(@LayoutRes itemLayout: Int) {
+        itemAdapter = CountryAdapter(itemLayout).apply {
+            setup(Countries.list)
+            onItemClickListener = {
+                onCountrySelectedListener?.invoke(it)
+                dismiss()
+            }
         }
     }
 

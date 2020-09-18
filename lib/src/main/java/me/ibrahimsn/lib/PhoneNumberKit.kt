@@ -98,10 +98,14 @@ class PhoneNumberKit(private val context: Context) {
     /**
      * Sets up country code picker bottomSheet
      */
-    fun setupCountryPicker(activity: AppCompatActivity) {
+    fun setupCountryPicker(
+        activity: AppCompatActivity,
+        itemLayout: Int = R.layout.item_country_picker
+    ) {
         input?.setStartIconOnClickListener {
             CountryPickerBottomSheet.newInstance().apply {
-                onCountrySelectListener = { country ->
+                setup(itemLayout)
+                onCountrySelectedListener = { country ->
                     setCountry(country, true)
                 }
                 show(activity.supportFragmentManager, CountryPickerBottomSheet.TAG)
