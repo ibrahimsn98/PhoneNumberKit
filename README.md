@@ -86,13 +86,13 @@ allprojects {
 Step 2. Add the dependency
 ```
 dependencies {
-    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.1'
+    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.3'
 }
 ```
 
 ## Checklist
 - [ ] Search for country codes
-- [ ] Custom list item layout support
+- [x] Custom list item layout support
 - [ ] Phone number validation indicator
 - [ ] Better performance with coroutines
 - [ ] Dark theme
