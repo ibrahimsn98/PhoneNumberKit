@@ -7,12 +7,16 @@ import android.text.InputType
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
+import me.ibrahimsn.lib.Constants.CHAR_DASH
+import me.ibrahimsn.lib.Constants.CHAR_PLUS
+import me.ibrahimsn.lib.Constants.CHAR_SPACE
+import me.ibrahimsn.lib.Constants.KEY_DASH
+import me.ibrahimsn.lib.Constants.KEY_DIGIT
+import me.ibrahimsn.lib.Constants.KEY_SPACE
 import me.ibrahimsn.lib.bottomsheet.CountryPickerBottomSheet
 import me.ibrahimsn.lib.core.Core
 import me.ibrahimsn.lib.util.PhoneNumberTextWatcher
-import me.ibrahimsn.lib.util.PhoneNumberValidator
 import me.ibrahimsn.lib.util.prependPlus
-import me.ibrahimsn.lib.util.startsWithPlus
 
 class PhoneNumberKit(private val context: Context) {
 
@@ -22,39 +26,60 @@ class PhoneNumberKit(private val context: Context) {
 
     private var country: Country? = null
 
-    private var rawInput: String?
-        get() = input?.editText?.text?.toString()
+    private var format: String = ""
+
+    private var hasManualCountry = false
+
+    private var rawInput: CharSequence?
+        get() = input?.editText?.text
         set(value) {
             input?.tag = Constants.VIEW_TAG
-            input?.editText?.setText(value)
-            value?.let {
-                input?.editText?.setSelection(value.length)
-            }
+            input?.editText?.setText("")
+            input?.editText?.append(value)
             input?.tag = null
         }
 
-    val isValid: Boolean
-        get() = PhoneNumberValidator.validate(rawInput)
-
     private val textWatcher = object: PhoneNumberTextWatcher() {
-        override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            if (input?.tag != Constants.VIEW_TAG) {
-                if (!text.isNullOrEmpty() && !text.startsWithPlus()) {
-                    rawInput = text.prependPlus()
-                }
 
-                val parsedNumber = core.parsePhoneNumber(rawInput, country?.iso2)
+        override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+            if (input?.tag != Constants.VIEW_TAG) {
+                val parsedNumber = core.parsePhoneNumber(rawInput.toString(), country?.iso2)
 
                 // Update country flag and mask if detected as a different one
                 if (country == null || country?.countryCode != parsedNumber?.countryCode) {
-                    setCountry(getCountry(parsedNumber?.countryCode))
+                    if (!hasManualCountry) {
+                        setCountry(getCountry(parsedNumber?.countryCode))
+                    }
                 }
 
-                // Update input text as formatted phone number
-                core.formatPhoneNumber(parsedNumber)?.let { number ->
-                    rawInput = number
+                if (count != 0) {
+                    applyFormat()
                 }
             }
+        }
+    }
+
+    private fun applyFormat() {
+        rawInput?.let { raw ->
+            val pureNumber = raw.filter { i -> i.isDigit() }.toMutableList()
+
+            pureNumber.add(0, CHAR_PLUS)
+
+            for (i in format.indices) {
+                if (pureNumber.size > i) {
+                    if (format[i] == KEY_SPACE && pureNumber[i] != CHAR_SPACE) {
+                        pureNumber.add(i, CHAR_SPACE)
+                        continue
+                    }
+
+                    if (format[i] == KEY_DASH && pureNumber[i] != CHAR_DASH) {
+                        pureNumber.add(i, CHAR_DASH)
+                        continue
+                    }
+                }
+            }
+
+            rawInput = pureNumber.joinToString("")
         }
     }
 
@@ -65,6 +90,7 @@ class PhoneNumberKit(private val context: Context) {
             // Clear input if a country code selected manually
             if (isManual) {
                 rawInput = country.countryCode.prependPlus()
+                hasManualCountry = true
             }
 
             // Setup country icon
@@ -75,8 +101,16 @@ class PhoneNumberKit(private val context: Context) {
             // Set text length limit according to the example phone number
             core.formatPhoneNumber(core.getExampleNumber(country.iso2))?.let { number ->
                 input?.editText?.filters = arrayOf(InputFilter.LengthFilter(number.length))
+                format = createNumberFormat(number)
+                applyFormat()
             }
         }
+    }
+
+    private fun createNumberFormat(number: String): String {
+        var format = number.replace("(\\d)".toRegex(), KEY_DIGIT.toString())
+        format = format.replace("(\\s)".toRegex(), KEY_SPACE.toString())
+        return format
     }
 
     /**
@@ -92,7 +126,8 @@ class PhoneNumberKit(private val context: Context) {
         input.setStartIconTintList(null)
 
         // Set initial country
-        setCountry(getCountry(defaultCountry) ?: Countries.list[0], true)
+        setCountry(getCountry(defaultCountry) ?: Countries.list[0])
+        rawInput = country?.countryCode?.prependPlus()
     }
 
     /**

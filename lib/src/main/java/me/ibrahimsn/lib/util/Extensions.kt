@@ -1,6 +1,6 @@
 package me.ibrahimsn.lib.util
 
-fun CharSequence.prependPlus(): String {
+fun CharSequence?.prependPlus(): String {
     return StringBuilder()
         .append("+")
         .append(this)
@@ -14,6 +14,6 @@ fun Int.prependPlus(): String {
         .toString()
 }
 
-fun CharSequence.startsWithPlus(): Boolean {
-    return this.startsWith("+")
+fun CharSequence?.startsWithPlus(): Boolean {
+    return this?.startsWith("+") == true
 }

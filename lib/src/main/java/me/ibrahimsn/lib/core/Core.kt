@@ -3,6 +3,8 @@ package me.ibrahimsn.lib.core
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.Phonenumber
+import me.ibrahimsn.lib.util.prependPlus
+import me.ibrahimsn.lib.util.startsWithPlus
 import java.util.*
 
 class Core {
@@ -15,7 +17,7 @@ class Core {
     ): Phonenumber.PhoneNumber? {
         return try {
             phoneUtil.parseAndKeepRawInput(
-                number,
+                if (number.startsWithPlus()) number else number.prependPlus(),
                 defaultRegion?.toUpperCase(Locale.ROOT)
             )
         } catch(e: NumberParseException) {
