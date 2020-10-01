@@ -49,5 +49,4 @@ class Core {
             null
         }
     }
-
 }

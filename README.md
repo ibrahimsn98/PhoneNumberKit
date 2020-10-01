@@ -59,6 +59,54 @@ To receive country name or iso2 code from given **country code**
 val country = phoneNumberKit.getCountry(90)
 ```
 
+## Usage with Custom Item Layout
+
+Add your custom item layout resource as a parameter
+```kotlin
+phoneNumberKit.setupCountryPicker(this, R.layout.my_item_layout)
+```
+You need to use below view ids in your layout file
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="12dp"
+    android:paddingHorizontal="18dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?android:attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/imageViewFlag"
+        android:layout_width="22dp"
+        android:layout_height="22dp" />
+
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="16sp"
+        android:textColor="#232425" />
+
+    <TextView
+        android:id="@+id/textViewCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="#838383" />
+
+</LinearLayout>
+```
+
+
 ## Demo
 <table>
 	<tr>
@@ -86,7 +134,7 @@ allprojects {
 Step 2. Add the dependency
 ```
 dependencies {
-    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.3'
+    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.4'
 }
 ```
 
@@ -102,7 +150,6 @@ dependencies {
 - This library is based on Google's lilPhoneNumber library (https://github.com/google/libphonenumber)
 - Inspired from PhoneNumberKit Swift library by [marmelloy](https://github.com/marmelroy) (https://github.com/marmelroy/PhoneNumberKit)
 - Flag images from [region-flags](https://github.com/behdad/region-flags)
-- Original country data from mledoze's [World countries in JSON, CSV and XML](https://github.com/mledoze/countries)
 
 ## License
 PhoneNumberKit is available under the Apache license. See the [LICENSE](https://github.com/ibrahimsn98/PhoneNumberKit/blob/master/LICENSE) file for more info.

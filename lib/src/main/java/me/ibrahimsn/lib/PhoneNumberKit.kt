@@ -15,8 +15,7 @@ import me.ibrahimsn.lib.Constants.KEY_DIGIT
 import me.ibrahimsn.lib.Constants.KEY_SPACE
 import me.ibrahimsn.lib.bottomsheet.CountryPickerBottomSheet
 import me.ibrahimsn.lib.core.Core
-import me.ibrahimsn.lib.util.PhoneNumberTextWatcher
-import me.ibrahimsn.lib.util.prependPlus
+import me.ibrahimsn.lib.util.*
 
 class PhoneNumberKit(private val context: Context) {
 
@@ -34,16 +33,18 @@ class PhoneNumberKit(private val context: Context) {
         get() = input?.editText?.text
         set(value) {
             input?.tag = Constants.VIEW_TAG
-            input?.editText?.setText("")
+            input?.editText?.clear()
             input?.editText?.append(value)
             input?.tag = null
         }
 
     private val textWatcher = object: PhoneNumberTextWatcher() {
-
         override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
             if (input?.tag != Constants.VIEW_TAG) {
-                val parsedNumber = core.parsePhoneNumber(rawInput.toString(), country?.iso2)
+                val parsedNumber = core.parsePhoneNumber(
+                    rawInput.toString().clearSpaces(),
+                    country?.iso2
+                )
 
                 // Update country flag and mask if detected as a different one
                 if (country == null || country?.countryCode != parsedNumber?.countryCode) {
@@ -61,17 +62,21 @@ class PhoneNumberKit(private val context: Context) {
 
     private fun applyFormat() {
         rawInput?.let { raw ->
+            // Clear all of the non-digit characters from the phone number
             val pureNumber = raw.filter { i -> i.isDigit() }.toMutableList()
 
+            // Add plus to beginning of the number
             pureNumber.add(0, CHAR_PLUS)
 
             for (i in format.indices) {
                 if (pureNumber.size > i) {
+                    // Put required format spaces
                     if (format[i] == KEY_SPACE && pureNumber[i] != CHAR_SPACE) {
                         pureNumber.add(i, CHAR_SPACE)
                         continue
                     }
 
+                    // Put required format dashes
                     if (format[i] == KEY_DASH && pureNumber[i] != CHAR_DASH) {
                         pureNumber.add(i, CHAR_DASH)
                         continue
@@ -79,7 +84,7 @@ class PhoneNumberKit(private val context: Context) {
                 }
             }
 
-            rawInput = pureNumber.joinToString("")
+            rawInput = pureNumber.toRawString()
         }
     }
 
@@ -87,18 +92,24 @@ class PhoneNumberKit(private val context: Context) {
         country?.let {
             this.country = country
 
-            // Clear input if a country code selected manually
-            if (isManual) {
-                rawInput = country.countryCode.prependPlus()
-                hasManualCountry = true
-            }
-
             // Setup country icon
             getFlagIcon(country.iso2)?.let { icon ->
                 input?.startIconDrawable = icon
             }
 
             // Set text length limit according to the example phone number
+            core.getExampleNumber(country.iso2)?.let { example ->
+
+                if (isManual) {
+                    hasManualCountry = true
+                    rawInput = if (country.countryCode != example.countryCode) {
+                        example.countryCode.prependPlus() + country.countryCode
+                    } else {
+                        country.countryCode.prependPlus()
+                    }
+                }
+            }
+
             core.formatPhoneNumber(core.getExampleNumber(country.iso2))?.let { number ->
                 input?.editText?.filters = arrayOf(InputFilter.LengthFilter(number.length))
                 format = createNumberFormat(number)
@@ -107,6 +118,7 @@ class PhoneNumberKit(private val context: Context) {
         }
     }
 
+    // Creates a pattern like +90 506 555 55 55 -> +0010001000100100
     private fun createNumberFormat(number: String): String {
         var format = number.replace("(\\d)".toRegex(), KEY_DIGIT.toString())
         format = format.replace("(\\s)".toRegex(), KEY_SPACE.toString())
