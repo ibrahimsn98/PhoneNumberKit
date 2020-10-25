@@ -63,7 +63,7 @@ val country = phoneNumberKit.getCountry(90)
 
 Add your custom item layout resource as a parameter
 ```kotlin
-phoneNumberKit.setupCountryPicker(this, R.layout.my_item_layout)
+phoneNumberKit.setupCountryPicker(this, R.layout.my_item_layout, searchEnabled = true)
 ```
 You need to use below view ids in your layout file
 ```xml
@@ -134,15 +134,15 @@ allprojects {
 Step 2. Add the dependency
 ```
 dependencies {
-    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.4'
+    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.5'
 }
 ```
 
 ## Checklist
-- [ ] Search for country codes
+- [x] Search for country codes
 - [x] Custom list item layout support
+- [x] Better performance with coroutines
 - [ ] Phone number validation indicator
-- [ ] Better performance with coroutines
 - [ ] Dark theme
 - [ ] Tests
 

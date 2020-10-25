@@ -1,5 +1,6 @@
 package me.ibrahimsn.lib.util
 
+import android.view.View
 import android.widget.EditText
 import me.ibrahimsn.lib.Constants.CHAR_PLUS
 
@@ -31,4 +32,8 @@ fun <T> Collection<T>.toRawString(): String {
 
 fun EditText.clear() {
     this.setText("")
+}
+
+fun View.showIf(statement: Boolean) {
+    visibility = if (statement) View.VISIBLE else View.GONE
 }
