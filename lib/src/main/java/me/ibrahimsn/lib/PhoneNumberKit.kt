@@ -14,6 +14,7 @@ import me.ibrahimsn.lib.Constants.KEY_DASH
 import me.ibrahimsn.lib.Constants.KEY_DIGIT
 import me.ibrahimsn.lib.Constants.KEY_SPACE
 import me.ibrahimsn.lib.bottomsheet.CountryPickerBottomSheet
+import me.ibrahimsn.lib.bottomsheet.CountryPickerConfig
 import me.ibrahimsn.lib.core.Core
 import me.ibrahimsn.lib.util.*
 
@@ -202,11 +203,13 @@ class PhoneNumberKit(private val context: Context) {
      */
     fun getFlagIcon(iso2: String?): Drawable? {
         return try {
-            ContextCompat.getDrawable(context, context.resources.getIdentifier(
-                "country_flag_$iso2",
-                "drawable",
-                context.packageName
-            ))
+            ContextCompat.getDrawable(
+                context, context.resources.getIdentifier(
+                    "country_flag_$iso2",
+                    "drawable",
+                    context.packageName
+                )
+            )
         } catch (e: Exception) {
             e.printStackTrace()
             null

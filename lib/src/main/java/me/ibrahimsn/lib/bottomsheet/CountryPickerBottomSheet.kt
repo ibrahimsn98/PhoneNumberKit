@@ -13,7 +13,7 @@ import me.ibrahimsn.lib.Countries
 import me.ibrahimsn.lib.Country
 import me.ibrahimsn.lib.R
 
-class CountryPickerBottomSheet: BottomSheetDialogFragment() {
+class CountryPickerBottomSheet : BottomSheetDialogFragment() {
 
     private var itemAdapter: CountryAdapter? = null
 
