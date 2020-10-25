@@ -14,7 +14,6 @@ import me.ibrahimsn.lib.Constants.KEY_DASH
 import me.ibrahimsn.lib.Constants.KEY_DIGIT
 import me.ibrahimsn.lib.Constants.KEY_SPACE
 import me.ibrahimsn.lib.bottomsheet.CountryPickerBottomSheet
-import me.ibrahimsn.lib.bottomsheet.CountryPickerConfig
 import me.ibrahimsn.lib.core.Core
 import me.ibrahimsn.lib.util.*
 
