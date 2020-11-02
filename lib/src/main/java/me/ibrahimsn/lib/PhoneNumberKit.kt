@@ -16,6 +16,7 @@ import me.ibrahimsn.lib.Constants.KEY_SPACE
 import me.ibrahimsn.lib.bottomsheet.CountryPickerBottomSheet
 import me.ibrahimsn.lib.core.Core
 import me.ibrahimsn.lib.util.*
+import java.util.*
 
 class PhoneNumberKit(private val context: Context) {
 
@@ -143,6 +144,23 @@ class PhoneNumberKit(private val context: Context) {
     }
 
     /**
+     * Attaches to textInputLayout
+     */
+    fun attachToInput(input: TextInputLayout, countryIso2: String) {
+        this.input = input
+        input.editText?.inputType = InputType.TYPE_CLASS_PHONE
+        input.editText?.addTextChangedListener(textWatcher)
+
+        input.isStartIconVisible = true
+        input.isStartIconCheckable = true
+        input.setStartIconTintList(null)
+
+        // Set initial country
+        setCountry(getCountry(countryIso2.trim().toLowerCase(Locale.ENGLISH)) ?: Countries.list[0])
+        rawInput = country?.countryCode?.prependPlus()
+    }
+
+    /**
      * Sets up country code picker bottomSheet
      */
     fun setupCountryPicker(
@@ -225,6 +243,18 @@ class PhoneNumberKit(private val context: Context) {
     fun getCountry(countryCode: Int?): Country? {
         for (country in Countries.list) {
             if (country.countryCode == countryCode) {
+                return country
+            }
+        }
+        return null
+    }
+
+    /**
+     * Provides country for given country iso2
+     */
+    private fun getCountry(countryIso2: String?): Country? {
+        for (country in Countries.list) {
+            if (country.iso2 == countryIso2) {
                 return country
             }
         }
