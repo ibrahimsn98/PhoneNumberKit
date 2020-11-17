@@ -20,7 +20,7 @@ import java.util.*
 
 class PhoneNumberKit(private val context: Context) {
 
-    private val core = Core()
+    private val core = Core(context)
 
     private var input: TextInputLayout? = null
 
@@ -39,7 +39,7 @@ class PhoneNumberKit(private val context: Context) {
             input?.tag = null
         }
 
-    private val textWatcher = object: PhoneNumberTextWatcher() {
+    private val textWatcher = object : PhoneNumberTextWatcher() {
         override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
             if (input?.tag != Constants.VIEW_TAG) {
                 val parsedNumber = core.parsePhoneNumber(

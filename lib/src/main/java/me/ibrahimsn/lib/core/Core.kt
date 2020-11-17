@@ -1,15 +1,16 @@
 package me.ibrahimsn.lib.core
 
-import com.google.i18n.phonenumbers.NumberParseException
-import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.i18n.phonenumbers.Phonenumber
+import android.content.Context
+import io.michaelrocks.libphonenumber.android.NumberParseException
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
+import io.michaelrocks.libphonenumber.android.Phonenumber
 import me.ibrahimsn.lib.util.prependPlus
 import me.ibrahimsn.lib.util.startsWithPlus
 import java.util.*
 
-class Core {
+class Core(context: Context) {
 
-    private var phoneUtil: PhoneNumberUtil = PhoneNumberUtil.getInstance()
+    private var phoneUtil: PhoneNumberUtil = PhoneNumberUtil.createInstance(context)
 
     fun parsePhoneNumber(
         number: String?,
@@ -20,7 +21,7 @@ class Core {
                 if (number.startsWithPlus()) number else number.prependPlus(),
                 defaultRegion?.toUpperCase(Locale.ROOT)
             )
-        } catch(e: NumberParseException) {
+        } catch (e: NumberParseException) {
             null
         }
     }

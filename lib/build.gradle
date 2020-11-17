@@ -43,6 +43,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation 'com.google.android.material:material:1.2.1'
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.8.8'
+    implementation 'io.michaelrocks:libphonenumber-android:8.12.13'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0'
 }
