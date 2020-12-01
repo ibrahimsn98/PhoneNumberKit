@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.InputFilter
 import android.text.InputType
+import android.util.Log
 import android.util.Patterns
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -62,6 +63,8 @@ class PhoneNumberKit(private val context: Context) {
                 if (count != 0) {
                     applyFormat()
                 }
+
+                validate(rawInput)
             }
         }
     }
