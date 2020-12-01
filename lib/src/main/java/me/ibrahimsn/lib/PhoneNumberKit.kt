@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.InputFilter
 import android.text.InputType
+import android.util.Patterns
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
@@ -30,6 +31,8 @@ class PhoneNumberKit(private val context: Context) {
 
     private var hasManualCountry = false
 
+    private var specialLength = 0
+
     private var rawInput: CharSequence?
         get() = input?.editText?.text
         set(value) {
@@ -38,6 +41,8 @@ class PhoneNumberKit(private val context: Context) {
             input?.editText?.append(value)
             input?.tag = null
         }
+
+    val isValid: Boolean get() = validate(rawInput)
 
     private val textWatcher = object : PhoneNumberTextWatcher() {
         override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
@@ -100,7 +105,6 @@ class PhoneNumberKit(private val context: Context) {
 
             // Set text length limit according to the example phone number
             core.getExampleNumber(country.iso2)?.let { example ->
-
                 if (isManual) {
                     hasManualCountry = true
                     rawInput = if (country.countryCode != example.countryCode) {
@@ -113,6 +117,7 @@ class PhoneNumberKit(private val context: Context) {
 
             core.formatPhoneNumber(core.getExampleNumber(country.iso2))?.let { number ->
                 input?.editText?.filters = arrayOf(InputFilter.LengthFilter(number.length))
+                specialLength = number.length
                 format = createNumberFormat(number)
                 applyFormat()
             }
@@ -259,5 +264,12 @@ class PhoneNumberKit(private val context: Context) {
             }
         }
         return null
+    }
+
+    private fun validate(number: CharSequence?): Boolean {
+        if (number == null) return false
+        return !number.isNullOrEmpty()
+                && number.length >= specialLength
+                && Patterns.PHONE.matcher(number).find()
     }
 }
