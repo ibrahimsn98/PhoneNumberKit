@@ -93,7 +93,9 @@ class PhoneNumberKit(private val context: Context) {
                 }
             }
 
-            rawInput = pureNumber.toRawString()
+            if (pureNumber.size > 1) {
+                rawInput = pureNumber.toRawString()
+            }
         }
     }
 
@@ -148,7 +150,7 @@ class PhoneNumberKit(private val context: Context) {
 
         // Set initial country
         setCountry(getCountry(defaultCountry) ?: Countries.list[0])
-        rawInput = country?.countryCode?.prependPlus()
+        //rawInput = country?.countryCode?.prependPlus()
     }
 
     /**
@@ -165,7 +167,7 @@ class PhoneNumberKit(private val context: Context) {
 
         // Set initial country
         setCountry(getCountry(countryIso2.trim().toLowerCase(Locale.ENGLISH)) ?: Countries.list[0])
-        rawInput = country?.countryCode?.prependPlus()
+        //rawInput = country?.countryCode?.prependPlus()
     }
 
     /**

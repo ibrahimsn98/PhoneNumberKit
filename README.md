@@ -122,6 +122,9 @@ You need to use below view ids in your layout file
 </table>
 
 ## Installation
+
+> Follow me on Twitter [@ibrahimsn98](https://twitter.com/ibrahimsn98)
+
 Step 1. Add the JitPack repository to your build file
 ```
 allprojects {
@@ -134,7 +137,7 @@ allprojects {
 Step 2. Add the dependency
 ```
 dependencies {
-    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.6.1'
+    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.6.2'
 }
 ```
 
