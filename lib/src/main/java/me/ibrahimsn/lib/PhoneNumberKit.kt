@@ -176,11 +176,12 @@ class PhoneNumberKit(private val context: Context) {
     fun setupCountryPicker(
         activity: AppCompatActivity,
         itemLayout: Int = R.layout.item_country_picker,
-        searchEnabled: Boolean = false
+        searchEnabled: Boolean = false,
+        searchMode: SearchMode
     ) {
         input?.setStartIconOnClickListener {
             CountryPickerBottomSheet.newInstance().apply {
-                setup(itemLayout, searchEnabled)
+                setup(itemLayout, searchEnabled, searchMode)
                 onCountrySelectedListener = { country ->
                     setCountry(country, true)
                 }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 import me.ibrahimsn.lib.PhoneNumberKit
+import me.ibrahimsn.lib.SearchMode
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,7 +18,11 @@ class MainActivity : AppCompatActivity() {
         phoneNumberKit.attachToInput(textField, 1)
 
         // Setup country code picker optionally
-        phoneNumberKit.setupCountryPicker(this, searchEnabled = true)
+        phoneNumberKit.setupCountryPicker(
+            activity = this,
+            searchEnabled = true,
+            searchMode = SearchMode.NAME
+        )
 
         // Provides example phone number for given country iso2 code
         val exampleNumber = phoneNumberKit.getExampleNumber("tr")
