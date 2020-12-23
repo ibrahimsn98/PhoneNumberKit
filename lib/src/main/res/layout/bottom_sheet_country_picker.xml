@@ -42,7 +42,7 @@
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
-            android:inputType="phone"
+            android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:queryHint="Search country code"

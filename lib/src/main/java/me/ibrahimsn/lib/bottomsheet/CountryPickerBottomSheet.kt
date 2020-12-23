@@ -1,7 +1,6 @@
 package me.ibrahimsn.lib.bottomsheet
 
 import android.os.Bundle
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +17,6 @@ import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.Countries
 import me.ibrahimsn.lib.Country
 import me.ibrahimsn.lib.R
-import me.ibrahimsn.lib.SearchMode
 import me.ibrahimsn.lib.util.showIf
 import java.util.*
 
@@ -33,8 +31,6 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
     private val countries = Countries.list
 
     private var isSearchEnabled: Boolean = false
-
-    private var searchMode = SearchMode.CODE
 
     var onCountrySelectedListener: ((Country?) -> Unit)? = null
 
@@ -66,11 +62,6 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
         imageButtonClose.setOnClickListener {
             dismiss()
         }
-        searchView.inputType = if (searchMode == SearchMode.CODE) {
-            InputType.TYPE_CLASS_PHONE
-        } else {
-            InputType.TYPE_CLASS_TEXT
-        }
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
@@ -83,11 +74,10 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
         })
     }
 
-    fun setup(@LayoutRes itemLayout: Int, searchEnabled: Boolean = false, mode: SearchMode) {
+    fun setup(@LayoutRes itemLayout: Int, searchEnabled: Boolean = false) {
         itemAdapter = CountryAdapter(itemLayout).apply {
             setup(countries)
             isSearchEnabled = searchEnabled
-            searchMode = mode
             onItemClickListener = {
                 onCountrySelectedListener?.invoke(it)
                 dismiss()
@@ -99,11 +89,7 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
         scope.launch {
             query?.let {
                 val filtered = countries.filter {
-                    if (searchMode == SearchMode.CODE) {
-                        it.countryCode.toString().startsWith(query)
-                    } else {
-                        it.name.toLowerCase(Locale.ROOT).contains(query)
-                    }
+                    (it.countryCode.toString() + it.name.toLowerCase(Locale.ROOT)).contains(query)
                 }
                 recyclerView.post {
                     itemAdapter?.setup(filtered)

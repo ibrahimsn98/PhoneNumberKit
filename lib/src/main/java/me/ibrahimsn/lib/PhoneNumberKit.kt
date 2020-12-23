@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.InputFilter
 import android.text.InputType
-import android.util.Log
 import android.util.Patterns
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -176,12 +175,11 @@ class PhoneNumberKit(private val context: Context) {
     fun setupCountryPicker(
         activity: AppCompatActivity,
         itemLayout: Int = R.layout.item_country_picker,
-        searchEnabled: Boolean = false,
-        searchMode: SearchMode
+        searchEnabled: Boolean = false
     ) {
         input?.setStartIconOnClickListener {
             CountryPickerBottomSheet.newInstance().apply {
-                setup(itemLayout, searchEnabled, searchMode)
+                setup(itemLayout, searchEnabled)
                 onCountrySelectedListener = { country ->
                     setCountry(country, true)
                 }
