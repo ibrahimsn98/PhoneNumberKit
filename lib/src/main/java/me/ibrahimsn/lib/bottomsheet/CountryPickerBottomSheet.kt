@@ -89,7 +89,8 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
         scope.launch {
             query?.let {
                 val filtered = countries.filter {
-                    (it.countryCode.toString() + it.name.toLowerCase(Locale.ROOT)).contains(query)
+                    it.countryCode.toString().startsWith(query) ||
+                            it.name.toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT))
                 }
                 recyclerView.post {
                     itemAdapter?.setup(filtered)
