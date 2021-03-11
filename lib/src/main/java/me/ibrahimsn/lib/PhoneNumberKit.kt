@@ -98,7 +98,7 @@ class PhoneNumberKit(private val context: Context) {
         }
     }
 
-    private fun setCountry(country: Country?, isManual: Boolean = false) {
+    private fun setCountry(country: Country?, isManual: Boolean = false, prefill: Boolean = false) {
         country?.let {
             this.country = country
 
@@ -111,6 +111,8 @@ class PhoneNumberKit(private val context: Context) {
             core.getExampleNumber(country.iso2)?.let { example ->
                 if (isManual) {
                     hasManualCountry = true
+                }
+                if (isManual || prefill) {
                     rawInput = if (country.countryCode != example.countryCode) {
                         example.countryCode.prependPlus() + country.countryCode
                     } else {
@@ -148,7 +150,7 @@ class PhoneNumberKit(private val context: Context) {
         input.setStartIconTintList(null)
 
         // Set initial country
-        setCountry(getCountry(defaultCountry) ?: Countries.list[0], isManual = true)
+        setCountry(getCountry(defaultCountry) ?: Countries.list[0], prefill = true)
         //rawInput = country?.countryCode?.prependPlus()
     }
 
