@@ -148,7 +148,7 @@ class PhoneNumberKit(private val context: Context) {
         input.setStartIconTintList(null)
 
         // Set initial country
-        setCountry(getCountry(defaultCountry) ?: Countries.list[0])
+        setCountry(getCountry(defaultCountry) ?: Countries.list[0], isManual = true)
         //rawInput = country?.countryCode?.prependPlus()
     }
 

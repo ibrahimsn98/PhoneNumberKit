@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         val phoneNumberKit = PhoneNumberKit(this)
 
         // To attach an editTextLayout
-        phoneNumberKit.attachToInput(textField, 1)
+        phoneNumberKit.attachToInput(textField, 971)
 
         // Setup country code picker optionally
         phoneNumberKit.setupCountryPicker(
