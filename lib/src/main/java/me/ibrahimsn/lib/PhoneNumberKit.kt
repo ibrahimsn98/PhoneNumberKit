@@ -259,9 +259,13 @@ class PhoneNumberKit(private val context: Context) {
     }
 
     /**
+     * Provides country code
+     */
+
+    /**
      * Provides country for given country iso2
      */
-    private fun getCountry(countryIso2: String?): Country? {
+    fun getCountry(countryIso2: String?): Country? {
         for (country in Countries.list) {
             if (country.iso2 == countryIso2) {
                 return country
