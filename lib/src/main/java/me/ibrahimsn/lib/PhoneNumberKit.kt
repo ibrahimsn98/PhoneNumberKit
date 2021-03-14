@@ -150,7 +150,10 @@ class PhoneNumberKit(private val context: Context) {
         input.setStartIconTintList(null)
 
         // Set initial country
-        setCountry(getCountry(defaultCountry) ?: Countries.list[0], prefill = true)
+        setCountry(
+            country = getCountry(defaultCountry) ?: Countries.list[0],
+            prefill = true
+        )
         //rawInput = country?.countryCode?.prependPlus()
     }
 
@@ -167,7 +170,10 @@ class PhoneNumberKit(private val context: Context) {
         input.setStartIconTintList(null)
 
         // Set initial country
-        setCountry(getCountry(countryIso2.trim().toLowerCase(Locale.ENGLISH)) ?: Countries.list[0])
+        setCountry(
+            country = getCountry(countryIso2.trim().toLowerCase(Locale.ENGLISH)) ?: Countries.list[0],
+            prefill = true
+        )
         //rawInput = country?.countryCode?.prependPlus()
     }
 
