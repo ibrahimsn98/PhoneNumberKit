@@ -129,7 +129,7 @@ class PhoneNumberKit(private val context: Context) {
             }
         }
     }
-    
+
     fun updateCountry(countryIso2: String) {
         setCountry(
             country = getCountry(countryIso2.trim().toLowerCase(Locale.ENGLISH)) ?: Countries.list[0],
