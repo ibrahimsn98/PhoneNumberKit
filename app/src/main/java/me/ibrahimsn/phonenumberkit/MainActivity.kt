@@ -2,6 +2,8 @@ package me.ibrahimsn.phonenumberkit
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
 import me.ibrahimsn.lib.PhoneNumberKit
 
@@ -9,6 +11,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        if (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_NO  && AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+        findViewById<FloatingActionButton>(R.id.activity_main_nightmode_fab).apply {
+            setOnClickListener {
+                AppCompatDelegate.setDefaultNightMode(when (AppCompatDelegate.getDefaultNightMode()) {
+                    AppCompatDelegate.MODE_NIGHT_YES -> AppCompatDelegate.MODE_NIGHT_NO
+                    AppCompatDelegate.MODE_NIGHT_NO -> AppCompatDelegate.MODE_NIGHT_YES
+                    else -> AppCompatDelegate.MODE_NIGHT_YES
+                })
+            }
+        }
 
         val phoneNumberKit = PhoneNumberKit.Builder(this)
             .build()
