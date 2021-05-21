@@ -21,6 +21,8 @@ android {
             jvmTarget = JavaVersion.VERSION_1_8.toString()
         }
 
+        vectorDrawables.useSupportLibrary = true
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
