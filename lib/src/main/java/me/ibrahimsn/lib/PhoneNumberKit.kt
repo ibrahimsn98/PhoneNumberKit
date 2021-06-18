@@ -31,8 +31,6 @@ class PhoneNumberKit(private val context: Context) {
 
     private var hasManualCountry = false
 
-    private var specialLength = 0
-
     private var rawInput: CharSequence?
         get() = input?.editText?.text
         set(value) {
@@ -123,7 +121,6 @@ class PhoneNumberKit(private val context: Context) {
 
             core.formatPhoneNumber(core.getExampleNumber(country.iso2))?.let { number ->
                 input?.editText?.filters = arrayOf(InputFilter.LengthFilter(number.length))
-                specialLength = number.length
                 format = createNumberFormat(number)
                 applyFormat()
             }
@@ -161,7 +158,6 @@ class PhoneNumberKit(private val context: Context) {
             country = getCountry(defaultCountry) ?: Countries.list[0],
             prefill = true
         )
-        //rawInput = country?.countryCode?.prependPlus()
     }
 
     /**
@@ -181,7 +177,6 @@ class PhoneNumberKit(private val context: Context) {
             country = getCountry(countryIso2.trim().toLowerCase(Locale.ENGLISH)) ?: Countries.list[0],
             prefill = true
         )
-        //rawInput = country?.countryCode?.prependPlus()
     }
 
     /**
@@ -292,7 +287,6 @@ class PhoneNumberKit(private val context: Context) {
     private fun validate(number: CharSequence?): Boolean {
         if (number == null) return false
         return !number.isNullOrEmpty()
-                && number.length >= specialLength
                 && Patterns.PHONE.matcher(number).find()
     }
 }
