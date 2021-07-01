@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.InputFilter
 import android.text.InputType
-import android.util.Patterns
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
@@ -269,10 +268,6 @@ class PhoneNumberKit(private val context: Context) {
     }
 
     /**
-     * Provides country code
-     */
-
-    /**
      * Provides country for given country iso2
      */
     fun getCountry(countryIso2: String?): Country? {
@@ -286,7 +281,6 @@ class PhoneNumberKit(private val context: Context) {
 
     private fun validate(number: CharSequence?): Boolean {
         if (number == null) return false
-        return !number.isNullOrEmpty()
-                && Patterns.PHONE.matcher(number).find()
+        return core.validateNumber(number.toString(), country?.iso2)
     }
 }
