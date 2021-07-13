@@ -106,6 +106,16 @@ You need to use below view ids in your layout file
 </LinearLayout>
 ```
 
+## Theming
+The following attributes are available for overriding in styles
+```xml
+<attr name="phoneNumberKit_TextSize" /> <!-- text sizes of bottomsheet header and recycler items -->
+<attr name="phoneNumberKit_ColorBottomSheetBackground" format="color|reference" /> <!-- bottomsheet header background colour -->
+<attr name="phoneNumberKit_ColorBottomSheetListBackground" format="color|reference" /> <!-- bottomsheet recycler and search bar background colour -->
+<attr name="phoneNumberKit_TextColorPrimary" format="color|reference"/> <!-- close bottomsheet button colour -->
+<attr name="phoneNumberKit_TextColorSecondary" format="color|reference"/> <!-- bottomsheet header and recycler item country name colour -->
+<attr name="phoneNumberKit_TextColorTertiary" format="color|reference"/> <!-- recycler item country code colour -->
+```
 
 ## Demo
 <table>

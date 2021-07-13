@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="phoneNumberKit_TextSize" />
+
+    <attr name="phoneNumberKit_ColorBottomSheetBackground" format="color|reference" />
+    <attr name="phoneNumberKit_ColorBottomSheetListBackground" format="color|reference" />
+    <attr name="phoneNumberKit_TextColorPrimary" format="color|reference"/>
+    <attr name="phoneNumberKit_TextColorSecondary" format="color|reference"/>
+    <attr name="phoneNumberKit_TextColorTertiary" format="color|reference"/>
+</resources>

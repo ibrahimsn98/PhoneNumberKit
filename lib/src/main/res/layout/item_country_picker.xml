@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -12,7 +13,8 @@
     <ImageView
         android:id="@+id/imageViewFlag"
         android:layout_width="22dp"
-        android:layout_height="22dp" />
+        android:layout_height="22dp"
+        tools:srcCompat="@drawable/country_flag_zw" />
 
     <TextView
         android:id="@+id/textViewName"
@@ -24,14 +26,20 @@
         android:singleLine="true"
         android:maxLines="1"
         android:ellipsize="end"
-        android:textSize="16sp"
-        android:textColor="#232425" />
+        android:textSize="?attr/phoneNumberKit_TextSize"
+        android:textColor="?attr/phoneNumberKit_TextColorSecondary"
+        tools:textSize="@dimen/phoneNumberKit_TextSizeRegular"
+        tools:textColor="@color/phoneNumberKit_TextColorSecondaryLight"
+        tools:text="Country" />
 
     <TextView
         android:id="@+id/textViewCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textColor="#838383" />
+        android:textSize="?attr/phoneNumberKit_TextSize"
+        android:textColor="?attr/phoneNumberKit_TextColorTertiary"
+        tools:textSize="@dimen/phoneNumberKit_TextSizeRegular"
+        tools:textColor="@color/phoneNumberKit_TextColorTertiaryLight"
+        tools:text="0" />
 
 </LinearLayout>
