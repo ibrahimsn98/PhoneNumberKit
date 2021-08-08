@@ -1,6 +1,8 @@
-package me.ibrahimsn.lib
+package me.ibrahimsn.lib.internal
 
-object Countries {
+import me.ibrahimsn.lib.api.Country
+
+internal object Countries {
 
     val list = listOf(
         Country("af", "Afghanistan (‫افغانستان‬‎)", 93),

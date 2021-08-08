@@ -1,4 +1,4 @@
-package me.ibrahimsn.lib.util
+package me.ibrahimsn.lib.internal.util
 
 import android.text.Editable
 import android.text.TextWatcher

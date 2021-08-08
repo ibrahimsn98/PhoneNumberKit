@@ -1,6 +1,6 @@
-package me.ibrahimsn.lib
+package me.ibrahimsn.lib.internal
 
-object Constants {
+internal object Constants {
 
     const val VIEW_TAG = "#"
 

@@ -1,4 +1,4 @@
-package me.ibrahimsn.lib.bottomsheet
+package me.ibrahimsn.lib.internal.ui
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
-import me.ibrahimsn.lib.Country
+import me.ibrahimsn.lib.api.Country
 import me.ibrahimsn.lib.R
 
 class CountryAdapter(
@@ -21,13 +21,13 @@ class CountryAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): CountryAdapter.ItemViewHolder {
+    ): ItemViewHolder {
         return ItemViewHolder(
             LayoutInflater.from(parent.context).inflate(itemLayout, parent, false)
         )
     }
 
-    override fun onBindViewHolder(holder: CountryAdapter.ItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.bind(items[position])
     }
 

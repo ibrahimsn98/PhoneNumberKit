@@ -1,8 +1,8 @@
-package me.ibrahimsn.lib.util
+package me.ibrahimsn.lib.internal.util
 
 import android.view.View
 import android.widget.EditText
-import me.ibrahimsn.lib.Constants.CHAR_PLUS
+import me.ibrahimsn.lib.internal.Constants.CHAR_PLUS
 
 internal fun CharSequence?.prependPlus(): String {
     return StringBuilder()

@@ -1,11 +1,11 @@
-package me.ibrahimsn.lib.core
+package me.ibrahimsn.lib.internal.core
 
 import android.content.Context
 import io.michaelrocks.libphonenumber.android.NumberParseException
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import io.michaelrocks.libphonenumber.android.Phonenumber
-import me.ibrahimsn.lib.util.prependPlus
-import me.ibrahimsn.lib.util.startsWithPlus
+import me.ibrahimsn.lib.internal.util.prependPlus
+import me.ibrahimsn.lib.internal.util.startsWithPlus
 import java.util.*
 
 internal class Core(context: Context) {

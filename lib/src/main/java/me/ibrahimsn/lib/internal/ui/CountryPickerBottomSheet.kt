@@ -1,4 +1,4 @@
-package me.ibrahimsn.lib.bottomsheet
+package me.ibrahimsn.lib.internal.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,10 +14,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import me.ibrahimsn.lib.Countries
-import me.ibrahimsn.lib.Country
+import me.ibrahimsn.lib.internal.Countries
+import me.ibrahimsn.lib.api.Country
 import me.ibrahimsn.lib.R
-import me.ibrahimsn.lib.util.showIf
+import me.ibrahimsn.lib.internal.util.showIf
 import java.util.*
 
 class CountryPickerBottomSheet : BottomSheetDialogFragment() {

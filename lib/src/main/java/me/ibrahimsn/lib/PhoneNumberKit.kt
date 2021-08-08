@@ -7,15 +7,23 @@ import android.text.InputType
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
-import me.ibrahimsn.lib.Constants.CHAR_DASH
-import me.ibrahimsn.lib.Constants.CHAR_PLUS
-import me.ibrahimsn.lib.Constants.CHAR_SPACE
-import me.ibrahimsn.lib.Constants.KEY_DASH
-import me.ibrahimsn.lib.Constants.KEY_DIGIT
-import me.ibrahimsn.lib.Constants.KEY_SPACE
-import me.ibrahimsn.lib.bottomsheet.CountryPickerBottomSheet
-import me.ibrahimsn.lib.core.Core
-import me.ibrahimsn.lib.util.*
+import me.ibrahimsn.lib.api.Country
+import me.ibrahimsn.lib.api.Phone
+import me.ibrahimsn.lib.internal.Constants.CHAR_DASH
+import me.ibrahimsn.lib.internal.Constants.CHAR_PLUS
+import me.ibrahimsn.lib.internal.Constants.CHAR_SPACE
+import me.ibrahimsn.lib.internal.Constants.KEY_DASH
+import me.ibrahimsn.lib.internal.Constants.KEY_DIGIT
+import me.ibrahimsn.lib.internal.Constants.KEY_SPACE
+import me.ibrahimsn.lib.internal.ui.CountryPickerBottomSheet
+import me.ibrahimsn.lib.internal.Constants
+import me.ibrahimsn.lib.internal.Countries
+import me.ibrahimsn.lib.internal.core.Core
+import me.ibrahimsn.lib.internal.util.PhoneNumberTextWatcher
+import me.ibrahimsn.lib.internal.util.clear
+import me.ibrahimsn.lib.internal.util.clearSpaces
+import me.ibrahimsn.lib.internal.util.prependPlus
+import me.ibrahimsn.lib.internal.util.toRawString
 import java.util.*
 
 class PhoneNumberKit(private val context: Context) {
@@ -282,5 +290,10 @@ class PhoneNumberKit(private val context: Context) {
     private fun validate(number: CharSequence?): Boolean {
         if (number == null) return false
         return core.validateNumber(number.toString(), country?.iso2)
+    }
+
+    companion object {
+
+        
     }
 }

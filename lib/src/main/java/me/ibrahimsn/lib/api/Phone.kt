@@ -1,4 +1,4 @@
-package me.ibrahimsn.lib
+package me.ibrahimsn.lib.api
 
 data class Phone(
     val nationalNumber: Long?,
