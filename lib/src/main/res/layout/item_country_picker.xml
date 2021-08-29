@@ -2,21 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:paddingVertical="12dp"
     android:paddingHorizontal="18dp"
     android:clickable="true"
-    android:focusable="true"
-    android:background="?android:attr/selectableItemBackground">
+    android:focusable="true">
 
-    <ImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageViewFlag"
+        tools:src="@drawable/country_flag_tr"
         android:layout_width="22dp"
         android:layout_height="22dp" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewName"
         android:layout_width="0dp"
+        tools:text="Turkey (Türkiye)"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginStart="16dp"
@@ -24,14 +26,13 @@
         android:singleLine="true"
         android:maxLines="1"
         android:ellipsize="end"
-        android:textSize="16sp"
-        android:textColor="#232425" />
+        android:textSize="16sp"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textColor="#838383" />
+        tools:text="90" />
 
 </LinearLayout>

@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <LinearLayout
@@ -13,19 +14,18 @@
         android:paddingHorizontal="18dp"
         android:paddingVertical="20dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Country Code"
-            android:textColor="#232425"
             android:textSize="16sp" />
 
-        <ImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/imageButtonClose"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:background="?actionBarItemBackground"
+            android:tint="?attr/colorOnSurface"
             android:src="@drawable/ic_close_24dp" />
 
     </LinearLayout>
@@ -35,7 +35,6 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
         android:layout_marginBottom="10dp"
-        app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="4dp"
         app:cardElevation="5dp"
         app:cardUseCompatPadding="true">
@@ -54,8 +53,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
+        tools:listitem="@layout/item_country_picker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorBottomSheetListBackground" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

@@ -3,7 +3,6 @@
 
     <style name="ThemeOverlay.PhoneNumberKit.BottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/Widget.PhoneNumberKit.BottomSheet</item>
-        <item name="colorSurface">@color/colorBottomSheetBackground</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
