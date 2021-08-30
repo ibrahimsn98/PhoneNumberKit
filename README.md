@@ -146,7 +146,7 @@ dependencies {
 - [x] Custom list item layout support
 - [x] Better performance with coroutines
 - [ ] Phone number validation indicator
-- [ ] Dark theme
+- [x] Dark theme
 - [ ] Tests
 
 ## Conception
