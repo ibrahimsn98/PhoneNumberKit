@@ -137,7 +137,7 @@ allprojects {
 Step 2. Add the dependency
 ```
 dependencies {
-    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.6.2'
+    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.7.5'
 }
 ```
 
