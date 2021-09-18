@@ -23,7 +23,8 @@ class CountryAdapter(
         viewType: Int
     ): ItemViewHolder {
         return ItemViewHolder(
-            LayoutInflater.from(parent.context).inflate(itemLayout, parent, false)
+            LayoutInflater.from(parent.context)
+                .inflate(itemLayout, parent, false)
         )
     }
 
@@ -57,7 +58,7 @@ class CountryAdapter(
             this.boundItem = country
             imageViewFlag.setImageResource(getFlagResource(country.iso2))
             textViewName.text = country.name
-            textViewCode.text = country.countryCode.toString()
+            textViewCode.text = country.code.toString()
         }
 
         private fun getFlagResource(iso2: String?): Int {

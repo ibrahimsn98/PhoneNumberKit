@@ -10,7 +10,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val phoneNumberKit = PhoneNumberKit(this)
+        val phoneNumberKit = PhoneNumberKit.Builder(this)
+            .build()
 
         // To attach an editTextLayout
         phoneNumberKit.attachToInput(textField, 971)
@@ -41,6 +42,6 @@ class MainActivity : AppCompatActivity() {
         val flag = phoneNumberKit.getFlagIcon("tr")
 
         // Provides country name, iso2 for given country code
-        val country = phoneNumberKit.getCountry(90)
+        //val country = phoneNumberKit.getCountry(90)
     }
 }

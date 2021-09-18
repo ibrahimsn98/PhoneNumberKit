@@ -14,7 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import me.ibrahimsn.lib.internal.Countries
 import me.ibrahimsn.lib.api.Country
 import me.ibrahimsn.lib.R
 import me.ibrahimsn.lib.internal.util.showIf
@@ -28,7 +27,7 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
 
     private var itemAdapter: CountryAdapter? = null
 
-    private val countries = Countries.list
+    private val countries = listOf<Country>()
 
     private var isSearchEnabled: Boolean = false
 
@@ -89,7 +88,7 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
         scope.launch {
             query?.let {
                 val filtered = countries.filter {
-                    it.countryCode.toString().startsWith(query) ||
+                    it.code.toString().startsWith(query) ||
                             it.name.toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT))
                 }
                 recyclerView.post {

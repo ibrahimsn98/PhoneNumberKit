@@ -4,11 +4,11 @@ import android.content.Context
 import io.michaelrocks.libphonenumber.android.NumberParseException
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import io.michaelrocks.libphonenumber.android.Phonenumber
-import me.ibrahimsn.lib.internal.util.prependPlus
-import me.ibrahimsn.lib.internal.util.startsWithPlus
+import me.ibrahimsn.lib.internal.ext.prependPlus
+import me.ibrahimsn.lib.internal.ext.startsWithPlus
 import java.util.*
 
-internal class Core(context: Context) {
+internal class Proxy(context: Context) {
 
     private var phoneUtil: PhoneNumberUtil = PhoneNumberUtil.createInstance(context)
 
@@ -19,7 +19,7 @@ internal class Core(context: Context) {
         return try {
             phoneUtil.parseAndKeepRawInput(
                 if (number.startsWithPlus()) number else number.prependPlus(),
-                defaultRegion?.toUpperCase(Locale.ROOT)
+                defaultRegion?.uppercase(Locale.ROOT)
             )
         } catch (e: NumberParseException) {
             null
@@ -43,7 +43,7 @@ internal class Core(context: Context) {
     fun getExampleNumber(iso2: String?): Phonenumber.PhoneNumber? {
         return try {
             phoneUtil.getExampleNumberForType(
-                iso2?.toUpperCase(Locale.ROOT),
+                iso2?.uppercase(Locale.ROOT),
                 PhoneNumberUtil.PhoneNumberType.MOBILE
             )
         } catch (e: Exception) {
