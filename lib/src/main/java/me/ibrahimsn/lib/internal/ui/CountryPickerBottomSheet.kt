@@ -16,7 +16,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.api.Country
 import me.ibrahimsn.lib.R
-import me.ibrahimsn.lib.internal.util.showIf
+import me.ibrahimsn.lib.internal.ext.showIf
 import java.util.*
 
 class CountryPickerBottomSheet : BottomSheetDialogFragment() {

@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import me.ibrahimsn.lib.api.Country
 import me.ibrahimsn.lib.api.Phone
 import me.ibrahimsn.lib.internal.Constants.CHAR_DASH
@@ -25,6 +27,7 @@ import me.ibrahimsn.lib.internal.ext.clearSpaces
 import me.ibrahimsn.lib.internal.ext.toCountryList
 import me.ibrahimsn.lib.internal.ext.toRawString
 import me.ibrahimsn.lib.internal.io.FileReader
+import me.ibrahimsn.lib.internal.pattern.Pattern
 import me.ibrahimsn.lib.internal.util.PhoneNumberTextWatcher
 import java.util.*
 
@@ -35,13 +38,13 @@ class PhoneNumberKit private constructor(
 
     private val supervisorJob = SupervisorJob()
 
-    private val scope = CoroutineScope(supervisorJob + Dispatchers.Default)
+    private val scope = CoroutineScope(supervisorJob + Dispatchers.Main)
 
     private val proxy: Proxy by lazy { Proxy(context) }
 
     private var input: TextInputLayout? = null
 
-    private var state: State = State()
+    private val state: MutableStateFlow<State> = MutableStateFlow(State.Ready)
 
     private var rawInput: CharSequence?
         get() = input?.editText?.text
@@ -54,37 +57,46 @@ class PhoneNumberKit private constructor(
 
     val isValid: Boolean get() = validate(rawInput)
 
+    private fun collectState() = scope.launch {
+        state.collect {
+            renderState(it)
+        }
+    }
+
     private val textWatcher = object : PhoneNumberTextWatcher() {
         override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
             scope.launch {
                 if (input?.tag != Constants.VIEW_TAG) {
-                    val parsedNumber = proxy.parsePhoneNumber(
-                        rawInput.toString().clearSpaces(),
-                        state?.country?.iso2
-                    )
+                    val state = this@PhoneNumberKit.state.value
+                    if (state is State.Attached) {
+                        val parsedNumber = proxy.parsePhoneNumber(
+                            rawInput.toString().clearSpaces(),
+                            state.country.iso2
+                        )
 
-                    // Update country flag and mask if detected as a different one
-                    if (state?.country == null || state?.country?.code != parsedNumber?.countryCode) {
-                        val country = getCountries().findCountry(parsedNumber?.countryCode)
+                        // Update country flag and mask if detected as a different one
+                        if (state.country.code != parsedNumber?.countryCode) {
+                            val country = getCountries().getCountry(parsedNumber?.countryCode)
 
-                        launch(Dispatchers.Main) {
-                            setCountry(country)
+                            val pattern = createNumberFormat(
+                                proxy.formatPhoneNumber(
+                                    proxy.getExampleNumber(country.iso2)
+                                )
+                            )
+
+                            this@PhoneNumberKit.state.value = State.Attached(
+                                country = country,
+                                pattern = Pattern(pattern),
+                                shouldFormat = count != 0
+                            )
                         }
                     }
-
-                    if (count != 0) {
-                        launch(Dispatchers.Main) {
-                            applyFormat()
-                        }
-                    }
-
-                    validate(rawInput)
                 }
             }
         }
     }
 
-    private fun applyFormat() {
+    private fun applyFormat(pattern: Pattern) {
         rawInput?.let { raw ->
             // Clear all of the non-digit characters from the phone number
             val pureNumber = raw.filter { i -> i.isDigit() }.toMutableList()
@@ -92,16 +104,16 @@ class PhoneNumberKit private constructor(
             // Add plus to beginning of the number
             pureNumber.add(0, CHAR_PLUS)
 
-            for (i in format.indices) {
+            for (i in pattern.indices) {
                 if (pureNumber.size > i) {
                     // Put required format spaces
-                    if (format[i] == KEY_SPACE && pureNumber[i] != CHAR_SPACE) {
+                    if (pattern.get(i) == KEY_SPACE && pureNumber[i] != CHAR_SPACE) {
                         pureNumber.add(i, CHAR_SPACE)
                         continue
                     }
 
                     // Put required format dashes
-                    if (format[i] == KEY_DASH && pureNumber[i] != CHAR_DASH) {
+                    if (pattern.get(i)  == KEY_DASH && pureNumber[i] != CHAR_DASH) {
                         pureNumber.add(i, CHAR_DASH)
                         continue
                     }
@@ -114,30 +126,20 @@ class PhoneNumberKit private constructor(
         }
     }
 
-    private fun setCountry(country: Country?, prefill: Boolean = false) {
-        country?.let {
-            this.country = country
-
-            // Setup country icon
-            getFlagIcon(country.iso2)?.let { icon ->
-                input?.startIconDrawable = icon
-            }
-
-            // Set text length limit according to the example phone number
-            proxy.getExampleNumber(country.iso2)?.let { example ->
-                if (prefill) {
-                    rawInput = if (country.code != example.countryCode) {
-                        example.countryCode.prependPlus() + country.code
-                    } else {
-                        country.code.prependPlus()
-                    }
+    private fun renderState(state: State) {
+        when (state) {
+            is State.Ready -> {}
+            is State.Attached -> {
+                getFlagIcon(state.country.iso2)?.let { icon ->
+                    input?.startIconDrawable = icon
                 }
-            }
-
-            proxy.formatPhoneNumber(proxy.getExampleNumber(country.iso2))?.let { number ->
-                input?.editText?.filters = arrayOf(InputFilter.LengthFilter(number.length))
-                format = createNumberFormat(number)
-                applyFormat()
+                if (rawInput.isNullOrEmpty()) {
+                    rawInput = state.country.code.prependPlus()
+                }
+                input?.editText?.filters = arrayOf(
+                    InputFilter.LengthFilter(state.pattern.length)
+                )
+                if (state.shouldFormat) applyFormat(state.pattern)
             }
         }
     }
@@ -145,13 +147,18 @@ class PhoneNumberKit private constructor(
     private fun setCountry(countryIso2: String) {
         scope.launch {
             val countries = getCountries()
-            val country = countries.findCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
-            launch(Dispatchers.Main) {
-                setCountry(
-                    country = country ?: countries[0],
-                    prefill = true
+            val country = countries.getCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
+
+            val pattern = createNumberFormat(
+                proxy.formatPhoneNumber(
+                    proxy.getExampleNumber(country.iso2)
                 )
-            }
+            )
+
+            state.value = State.Attached(
+                country = country,
+                pattern = Pattern(pattern)
+            )
         }
     }
 
@@ -160,20 +167,20 @@ class PhoneNumberKit private constructor(
             .toCountryList()
     }
 
-    // Creates a pattern like +90 506 555 55 55 -> +0010001000100100
-    private fun createNumberFormat(number: String): String {
-        var format = number.replace("(\\d)".toRegex(), KEY_DIGIT.toString())
-        format = format.replace("(\\s)".toRegex(), KEY_SPACE.toString())
-        return format
+    private fun createNumberFormat(number: String?): CharArray {
+        return number.orEmpty()
+            .replace("(\\d)".toRegex(), KEY_DIGIT.toString())
+            .replace("(\\s)".toRegex(), KEY_SPACE.toString())
+            .toCharArray()
     }
 
     fun attachToInput(input: TextInputLayout, defaultCountry: Int) {
         this.input = input
         scope.launch {
             val countries = getCountries()
-            val country = countries.findCountry(defaultCountry)
+            val country = countries.getCountry(defaultCountry)
             launch(Dispatchers.Main) {
-                attachToInput(input, country ?: countries.first())
+                attachToInput(input, country)
             }
         }
     }
@@ -182,9 +189,9 @@ class PhoneNumberKit private constructor(
         this.input = input
         scope.launch {
             val countries = getCountries()
-            val country = countries.findCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
+            val country = countries.getCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
             launch(Dispatchers.Main) {
-                attachToInput(input, country ?: countries.first())
+                attachToInput(input, country)
             }
         }
     }
@@ -196,7 +203,7 @@ class PhoneNumberKit private constructor(
         input.isStartIconVisible = true
         input.setStartIconTintList(null)
 
-        setCountry(country = country, prefill = true)
+        setCountry(country.iso2)
     }
 
     /**
@@ -212,7 +219,7 @@ class PhoneNumberKit private constructor(
             CountryPickerBottomSheet.newInstance().apply {
                 setup(itemLayout, searchEnabled)
                 onCountrySelectedListener = { country ->
-                    setCountry(country, true)
+                    setCountry(country?.iso2.orEmpty())
                 }
                 show(
                     activity.supportFragmentManager,
@@ -277,21 +284,21 @@ class PhoneNumberKit private constructor(
         }
     }
 
-    private fun List<Country>.findCountry(
+    private fun List<Country>.getCountry(
         countryCode: Int?
-    ) = this.firstOrNull {
+    ) = this.first {
         it.code == countryCode
     }
 
-    private fun List<Country>.findCountry(
+    private fun List<Country>.getCountry(
         countryIso2: String?
-    ) = this.firstOrNull {
+    ) = this.first {
         it.iso2 == countryIso2
     }
 
     private fun validate(number: CharSequence?): Boolean {
         if (number == null) return false
-        return proxy.validateNumber(number.toString(), country?.iso2)
+        return true //proxy.validateNumber(number.toString(), country?.iso2)
     }
 
     companion object {
