@@ -1,7 +1,7 @@
 package me.ibrahimsn.lib
 
 import me.ibrahimsn.lib.api.Country
-import me.ibrahimsn.lib.internal.pattern.Pattern
+import me.ibrahimsn.lib.internal.pattern.CountryPattern
 
 sealed class State {
 
@@ -9,7 +9,6 @@ sealed class State {
 
     data class Attached(
         val country: Country,
-        val pattern: Pattern,
-        val shouldFormat: Boolean = true
+        val pattern: CountryPattern
     ) : State()
 }

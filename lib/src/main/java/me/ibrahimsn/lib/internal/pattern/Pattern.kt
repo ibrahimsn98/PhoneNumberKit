@@ -1,12 +1,6 @@
 package me.ibrahimsn.lib.internal.pattern
 
-class Pattern(private val data: CharArray) {
+interface Pattern {
 
-    val length: Int
-        get() = data.size
-
-    val indices: IntRange
-        get() = data.indices
-
-    fun get(i: Int) = data[i]
+    fun apply(number: CharSequence): String
 }
