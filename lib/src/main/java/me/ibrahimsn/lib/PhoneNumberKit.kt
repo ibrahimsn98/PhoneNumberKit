@@ -102,6 +102,7 @@ class PhoneNumberKit private constructor(
     }
 
     fun attachToInput(input: TextInputLayout, defaultCountry: Int) {
+        this.input = input
         scope.launch {
             val country = default {
                 getCountries().findCountry(defaultCountry)
@@ -111,6 +112,7 @@ class PhoneNumberKit private constructor(
     }
 
     fun attachToInput(input: TextInputLayout, countryIso2: String) {
+        this.input = input
         scope.launch {
             val country = default {
                 getCountries().findCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
@@ -144,8 +146,6 @@ class PhoneNumberKit private constructor(
     }
 
     private fun attachToInput(input: TextInputLayout, country: Country) {
-        this.input = input
-
         input.editText?.inputType = InputType.TYPE_CLASS_PHONE
         input.editText?.addTextChangedListener(textWatcher)
 
@@ -262,7 +262,7 @@ class PhoneNumberKit private constructor(
     }
 
     companion object {
-        private const val ASSET_FILE_NAME = "countries.json"
+        const val ASSET_FILE_NAME = "countries.json"
     }
 
     class Builder(private val context: Context) {
