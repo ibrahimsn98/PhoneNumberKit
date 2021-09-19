@@ -16,6 +16,7 @@ import me.ibrahimsn.lib.internal.core.Proxy
 import me.ibrahimsn.lib.internal.ext.*
 import me.ibrahimsn.lib.internal.io.FileReader
 import me.ibrahimsn.lib.internal.pattern.CountryPattern
+import me.ibrahimsn.lib.internal.ui.CountryPickerArguments
 import me.ibrahimsn.lib.internal.ui.CountryPickerBottomSheet
 import me.ibrahimsn.lib.internal.util.PhoneNumberTextWatcher
 import java.util.*
@@ -166,8 +167,14 @@ class PhoneNumberKit private constructor(
     ) {
         input?.isStartIconCheckable = true
         input?.setStartIconOnClickListener {
-            CountryPickerBottomSheet.newInstance().apply {
-                setup(itemLayout, searchEnabled)
+            CountryPickerBottomSheet.newInstance(
+                CountryPickerArguments(
+                    itemLayout,
+                    searchEnabled,
+                    excludedCountries,
+                    admittedCountries
+                )
+            ).apply {
                 onCountrySelectedListener = { country ->
                     setCountry(country?.iso2.orEmpty())
                 }
