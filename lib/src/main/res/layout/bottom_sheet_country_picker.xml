@@ -18,7 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Country Code"
+            android:text="@string/bottom_sheet_title"
             android:textSize="16sp" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -47,7 +47,7 @@
             app:queryHint="Search country code"
             app:iconifiedByDefault="false"
             app:queryBackground="@null"
-            app:submitBackground="@null"/>
+            app:submitBackground="@null" />
 
     </androidx.cardview.widget.CardView>
 

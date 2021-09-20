@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="ThemeOverlay.PhoneNumberKit.BottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+    <style name="ThemeOverlay.PhoneNumberKit.BottomSheetDialog"
+        parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+
         <item name="bottomSheetStyle">@style/Widget.PhoneNumberKit.BottomSheet</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
-    <style name="Widget.PhoneNumberKit.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+    <style name="Widget.PhoneNumberKit.BottomSheet"
+        parent="Widget.MaterialComponents.BottomSheet">
+
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.PhoneNumberKit</item>
     </style>
 
