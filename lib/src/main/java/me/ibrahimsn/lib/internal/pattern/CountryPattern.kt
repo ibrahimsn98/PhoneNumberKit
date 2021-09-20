@@ -1,7 +1,6 @@
 package me.ibrahimsn.lib.internal.pattern
 
-import me.ibrahimsn.lib.Character
-import me.ibrahimsn.lib.internal.Constants
+import me.ibrahimsn.lib.internal.model.Character
 
 class CountryPattern private constructor(
     private val pattern: CharArray
@@ -38,8 +37,8 @@ class CountryPattern private constructor(
 
         fun create(number: String?) = CountryPattern(
             number.orEmpty()
-                .replace("(\\d)".toRegex(), Constants.KEY_DIGIT.toString())
-                .replace("(\\s)".toRegex(), Constants.KEY_SPACE.toString())
+                .replace("(\\d)".toRegex(), Character.DIGIT.key.toString())
+                .replace("(\\s)".toRegex(), Character.SPACE.key.toString())
                 .toCharArray()
             )
     }

@@ -1,4 +1,4 @@
-package me.ibrahimsn.lib
+package me.ibrahimsn.lib.internal.model
 
 enum class Character(val key: Char, val char: Char) {
 

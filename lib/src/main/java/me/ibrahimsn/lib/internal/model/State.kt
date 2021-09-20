@@ -1,4 +1,4 @@
-package me.ibrahimsn.lib
+package me.ibrahimsn.lib.internal.model
 
 import me.ibrahimsn.lib.api.Country
 import me.ibrahimsn.lib.internal.pattern.CountryPattern

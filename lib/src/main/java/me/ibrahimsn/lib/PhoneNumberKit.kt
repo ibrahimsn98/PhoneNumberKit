@@ -15,6 +15,7 @@ import me.ibrahimsn.lib.api.Phone
 import me.ibrahimsn.lib.internal.core.Proxy
 import me.ibrahimsn.lib.internal.ext.*
 import me.ibrahimsn.lib.internal.io.FileReader
+import me.ibrahimsn.lib.internal.model.State
 import me.ibrahimsn.lib.internal.pattern.CountryPattern
 import me.ibrahimsn.lib.internal.ui.CountryPickerArguments
 import me.ibrahimsn.lib.internal.ui.CountryPickerBottomSheet
@@ -59,21 +60,12 @@ class PhoneNumberKit private constructor(
                     )
 
                     if (state.country.code != parsedNumber?.countryCode) {
-                        val country = default {
+                        val country = default() {
                             getCountries().findCountry(parsedNumber?.countryCode)
                         }
 
                         if (country != null) {
-                            val pattern = CountryPattern.create(
-                                proxy.formatPhoneNumber(
-                                    proxy.getExampleNumber(country.iso2)
-                                )
-                            )
-
-                            this@PhoneNumberKit.state.value = State.Attached(
-                                country = country,
-                                pattern = pattern
-                            )
+                            setCountry(country)
                         }
                     }
 
@@ -86,10 +78,13 @@ class PhoneNumberKit private constructor(
     }
 
     private fun setCountry(countryIso2: String) = scope.launch {
-        val country = default {
+        val country = default() {
             getCountries().findCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
         } ?: return@launch
+        setCountry(country)
+    }
 
+    private fun setCountry(country: Country) {
         val pattern = CountryPattern.create(
             proxy.formatPhoneNumber(
                 proxy.getExampleNumber(country.iso2)
@@ -105,7 +100,7 @@ class PhoneNumberKit private constructor(
     fun attachToInput(input: TextInputLayout, defaultCountry: Int) {
         this.input = input
         scope.launch {
-            val country = default {
+            val country = default() {
                 getCountries().findCountry(defaultCountry)
             }
             if (country != null) attachToInput(input, country)
@@ -115,7 +110,7 @@ class PhoneNumberKit private constructor(
     fun attachToInput(input: TextInputLayout, countryIso2: String) {
         this.input = input
         scope.launch {
-            val country = default {
+            val country = default() {
                 getCountries().findCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
             }
             if (country != null) attachToInput(input, country)
@@ -141,7 +136,7 @@ class PhoneNumberKit private constructor(
         }
     }
 
-    private suspend fun getCountries() = io {
+    private suspend fun getCountries() = io() {
         FileReader.readAssetFile(context, ASSET_FILE_NAME)
             .toCountryList()
     }
@@ -176,7 +171,7 @@ class PhoneNumberKit private constructor(
                 )
             ).apply {
                 onCountrySelectedListener = { country ->
-                    setCountry(country?.iso2.orEmpty())
+                    setCountry(country)
                 }
                 show(
                     activity.supportFragmentManager,

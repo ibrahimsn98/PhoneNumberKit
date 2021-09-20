@@ -30,15 +30,15 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
 
     private val scope = CoroutineScope(supervisorJob + Dispatchers.Main)
 
-    var onCountrySelectedListener: ((Country?) -> Unit)? = null
+    var onCountrySelectedListener: ((Country) -> Unit)? = null
 
     private val viewState: MutableStateFlow<CountryPickerViewState> = MutableStateFlow(
         CountryPickerViewState(emptyList())
     )
 
-    private val args: CountryPickerArguments = requireNotNull(
-        arguments?.getParcelable(BUNDLE_ARGS)
-    )
+    private val args: CountryPickerArguments by lazy {
+        requireNotNull(requireArguments().getParcelable(BUNDLE_ARGS))
+    }
 
     private val itemAdapter: CountryAdapter by lazy {
         CountryAdapter(args.itemLayout)
@@ -70,14 +70,17 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
 
     private fun initView() {
         searchView.showIf(args.isSearchEnabled)
+
         recyclerView.apply {
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             layoutManager = LinearLayoutManager(context)
             adapter = itemAdapter
         }
+
         imageButtonClose.setOnClickListener {
             dismiss()
         }
+
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
@@ -88,6 +91,7 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
                 return true
             }
         })
+
         itemAdapter.onItemClickListener = {
             onCountrySelectedListener?.invoke(it)
             dismiss()

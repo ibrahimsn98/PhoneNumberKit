@@ -11,10 +11,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val phoneNumberKit = PhoneNumberKit.Builder(this)
+            .admitCountries(listOf("tr", "ca"))
             .build()
 
         // To attach an editTextLayout
-        phoneNumberKit.attachToInput(textField, 971)
+        phoneNumberKit.attachToInput(textField, "tr")
 
         // Setup country code picker optionally
         phoneNumberKit.setupCountryPicker(

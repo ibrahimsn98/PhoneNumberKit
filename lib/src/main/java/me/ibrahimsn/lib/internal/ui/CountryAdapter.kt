@@ -16,7 +16,7 @@ class CountryAdapter(
 
     private val items = mutableListOf<Country>()
 
-    var onItemClickListener: ((Country?) -> Unit)? = null
+    var onItemClickListener: ((Country) -> Unit)? = null
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -50,7 +50,9 @@ class CountryAdapter(
 
         init {
             itemView.setOnClickListener {
-                onItemClickListener?.invoke(boundItem)
+                boundItem?.let {
+                    onItemClickListener?.invoke(it)
+                }
             }
         }
 
