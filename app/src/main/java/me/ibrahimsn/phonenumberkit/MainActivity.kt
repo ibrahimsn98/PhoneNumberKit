@@ -11,7 +11,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val phoneNumberKit = PhoneNumberKit.Builder(this)
-            .admitCountries(listOf("tr", "ca"))
             .build()
 
         // To attach an editTextLayout

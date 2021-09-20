@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.PhoneNumberKit
 import me.ibrahimsn.lib.R
 import me.ibrahimsn.lib.api.Country
+import me.ibrahimsn.lib.internal.ext.default
 import me.ibrahimsn.lib.internal.ext.showIf
 import me.ibrahimsn.lib.internal.ext.toCountryList
 import me.ibrahimsn.lib.internal.io.FileReader
@@ -104,11 +105,17 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun fetchData() {
-        viewState.value = CountryPickerViewState(
+    private fun fetchData() = scope.launch {
+        val countries = default {
             FileReader.readAssetFile(requireContext(), PhoneNumberKit.ASSET_FILE_NAME)
-            .toCountryList()
-        )
+                .toCountryList()
+                .filter {
+                    args.admittedCountries.isEmpty() || args.admittedCountries.contains(it.iso2)
+                }.filterNot {
+                    args.excludedCountries.contains(it.iso2)
+                }
+        }
+        viewState.value = CountryPickerViewState(countries)
     }
 
     private fun searchCountries(query: String?) {
