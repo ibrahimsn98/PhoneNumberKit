@@ -40,8 +40,5 @@ class MainActivity : AppCompatActivity() {
 
         // Provides country flag icon for given iso2 code
         val flag = phoneNumberKit.getFlagIcon("tr")
-
-        // Provides country name, iso2 for given country code
-        //val country = phoneNumberKit.getCountry(90)
     }
 }

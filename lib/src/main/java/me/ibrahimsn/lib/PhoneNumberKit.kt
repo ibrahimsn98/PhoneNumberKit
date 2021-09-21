@@ -2,6 +2,7 @@ package me.ibrahimsn.lib
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +27,7 @@ class PhoneNumberKit private constructor(
     private val context: Context,
     private val excludedCountries: List<String>,
     private val admittedCountries: List<String>
-) {
+) : PhoneNumberTextWatcher() {
 
     private val supervisorJob = SupervisorJob()
 
@@ -38,47 +39,56 @@ class PhoneNumberKit private constructor(
 
     private var input: TextInputLayout? = null
 
+    private val countriesCache = mutableListOf<Country>()
+
+    private var afterText = ""
+
     private var rawInput: CharSequence?
         get() = input?.editText?.text
         set(value) {
-            input?.editText?.removeTextChangedListener(textWatcher)
-            input?.editText?.clear()
-            input?.editText?.append(value)
-            input?.editText?.addTextChangedListener(textWatcher)
+            input?.editText?.apply {
+                removeTextChangedListener(this@PhoneNumberKit)
+                clear()
+                append(value)
+                addTextChangedListener(this@PhoneNumberKit)
+            }
         }
 
     val isValid: Boolean get() = validate(rawInput)
 
-    private val textWatcher = object : PhoneNumberTextWatcher() {
-        override fun onTextChanged(text: String, isDeleting: Boolean) {
-            scope.launch {
-                val state = this@PhoneNumberKit.state.value
-                if (state is State.Attached) {
-                    val parsedNumber = proxy.parsePhoneNumber(
-                        rawInput?.toString().orEmpty().clearSpaces(),
-                        state.country.iso2
-                    )
+    override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+        super.onTextChanged(text, start, before, count)
+        val state = this@PhoneNumberKit.state.value
+        if (state is State.Attached) {
+            val parsedNumber = proxy.parsePhoneNumber(
+                rawInput?.toString().orEmpty().clearSpaces(),
+                state.country.iso2
+            )
 
-                    if (state.country.code != parsedNumber?.countryCode) {
-                        val country = default() {
-                            getCountries().findCountry(parsedNumber?.countryCode)
-                        }
-
-                        if (country != null) {
-                            setCountry(country)
-                        }
-                    }
-
-                    if (text.isNotEmpty() && isDeleting.not()) {
-                        rawInput = state.pattern.apply(text)
-                    }
+            // Time to change the input country format
+            if (state.country.code != parsedNumber?.countryCode) {
+                val country = countriesCache.findCountry(parsedNumber?.countryCode)
+                if (country != null) {
+                    setCountry(country)
                 }
+            }
+
+            if (!text.isNullOrEmpty()) {
+                afterText = state.pattern.apply(text)
             }
         }
     }
 
+    override fun afterTextChanged(text: Editable?) {
+        super.afterTextChanged(text)
+        this.input?.editText?.removeTextChangedListener(this)
+        text?.replace(0, text.length, this.afterText)
+        this.input?.editText?.setSelection(text?.length ?: 0)
+        this.input?.editText?.addTextChangedListener(this)
+    }
+
     private fun setCountry(countryIso2: String) = scope.launch {
-        val country = default() {
+        val country = default {
             getCountries().findCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
         } ?: return@launch
         setCountry(country)
@@ -100,7 +110,7 @@ class PhoneNumberKit private constructor(
     fun attachToInput(input: TextInputLayout, defaultCountry: Int) {
         this.input = input
         scope.launch {
-            val country = default() {
+            val country = default {
                 getCountries().findCountry(defaultCountry)
             }
             if (country != null) attachToInput(input, country)
@@ -110,7 +120,7 @@ class PhoneNumberKit private constructor(
     fun attachToInput(input: TextInputLayout, countryIso2: String) {
         this.input = input
         scope.launch {
-            val country = default() {
+            val country = default {
                 getCountries().findCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
             }
             if (country != null) attachToInput(input, country)
@@ -125,7 +135,7 @@ class PhoneNumberKit private constructor(
                     getFlagIcon(state.country.iso2)?.let { icon ->
                         input?.startIconDrawable = icon
                     }
-                    if (rawInput.isNullOrEmpty()) {
+                    if (rawInput.isNullOrEmpty() || rawInput == state.country.iso2.prependPlus()) {
                         rawInput = state.country.code.prependPlus()
                     }
                     input?.editText?.filters = arrayOf(
@@ -136,14 +146,14 @@ class PhoneNumberKit private constructor(
         }
     }
 
-    private suspend fun getCountries() = io() {
+    private suspend fun getCountries() = io {
         FileReader.readAssetFile(context, ASSET_FILE_NAME)
             .toCountryList()
     }
 
     private fun attachToInput(input: TextInputLayout, country: Country) {
         input.editText?.inputType = InputType.TYPE_CLASS_PHONE
-        input.editText?.addTextChangedListener(textWatcher)
+        input.editText?.addTextChangedListener(this)
 
         input.isStartIconVisible = true
         input.setStartIconTintList(null)
