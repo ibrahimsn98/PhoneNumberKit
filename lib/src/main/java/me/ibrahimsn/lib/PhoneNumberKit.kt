@@ -56,6 +56,12 @@ class PhoneNumberKit private constructor(
 
     val isValid: Boolean get() = validate(rawInput)
 
+    init {
+        scope.launch {
+            countriesCache.addAll(getCountries())
+        }
+    }
+
     override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
         super.onTextChanged(text, start, before, count)
         val state = this@PhoneNumberKit.state.value
@@ -135,7 +141,7 @@ class PhoneNumberKit private constructor(
                     getFlagIcon(state.country.iso2)?.let { icon ->
                         input?.startIconDrawable = icon
                     }
-                    if (rawInput.isNullOrEmpty() || rawInput == state.country.iso2.prependPlus()) {
+                    if (rawInput.isNullOrEmpty() || rawInput?.length.orZero() < 5) {
                         rawInput = state.country.code.prependPlus()
                     }
                     input?.editText?.filters = arrayOf(
@@ -147,8 +153,10 @@ class PhoneNumberKit private constructor(
     }
 
     private suspend fun getCountries() = io {
-        FileReader.readAssetFile(context, ASSET_FILE_NAME)
-            .toCountryList()
+        if (countriesCache.isEmpty()) {
+            FileReader.readAssetFile(context, ASSET_FILE_NAME)
+                .toCountryList()
+        } else countriesCache
     }
 
     private fun attachToInput(input: TextInputLayout, country: Country) {

@@ -17,6 +17,10 @@ internal fun Int.prependPlus(): String {
         .toString()
 }
 
+internal fun Int?.orZero(): Int {
+    return this ?: 0
+}
+
 internal fun CharSequence?.startsWithPlus(): Boolean {
     return this?.startsWith(Character.PLUS.char) == true
 }
