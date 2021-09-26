@@ -21,6 +21,7 @@ import me.ibrahimsn.lib.internal.pattern.CountryPattern
 import me.ibrahimsn.lib.internal.ui.CountryPickerArguments
 import me.ibrahimsn.lib.internal.ui.CountryPickerBottomSheet
 import me.ibrahimsn.lib.internal.util.PhoneNumberTextWatcher
+import java.lang.ref.WeakReference
 import java.util.*
 
 class PhoneNumberKit private constructor(
@@ -37,16 +38,16 @@ class PhoneNumberKit private constructor(
 
     private val state: MutableStateFlow<State> = MutableStateFlow(State.Ready)
 
-    private var input: TextInputLayout? = null
+    private var input: WeakReference<TextInputLayout> = WeakReference(null)
 
     private val countriesCache = mutableListOf<Country>()
 
     private var afterText = ""
 
     private var rawInput: CharSequence?
-        get() = input?.editText?.text
+        get() = input.get()?.editText?.text
         set(value) {
-            input?.editText?.apply {
+            input.get()?.editText?.apply {
                 removeTextChangedListener(this@PhoneNumberKit)
                 clear()
                 append(value)
@@ -87,10 +88,10 @@ class PhoneNumberKit private constructor(
 
     override fun afterTextChanged(text: Editable?) {
         super.afterTextChanged(text)
-        this.input?.editText?.removeTextChangedListener(this)
+        this.input.get()?.editText?.removeTextChangedListener(this)
         text?.replace(0, text.length, this.afterText)
-        this.input?.editText?.setSelection(text?.length ?: 0)
-        this.input?.editText?.addTextChangedListener(this)
+        this.input.get()?.editText?.setSelection(text?.length ?: 0)
+        this.input.get()?.editText?.addTextChangedListener(this)
     }
 
     private fun setCountry(countryIso2: String) = scope.launch {
@@ -114,7 +115,7 @@ class PhoneNumberKit private constructor(
     }
 
     fun attachToInput(input: TextInputLayout, defaultCountry: Int) {
-        this.input = input
+        this.input = WeakReference(input)
         scope.launch {
             val country = default {
                 getCountries().findCountry(defaultCountry)
@@ -124,7 +125,7 @@ class PhoneNumberKit private constructor(
     }
 
     fun attachToInput(input: TextInputLayout, countryIso2: String) {
-        this.input = input
+        this.input = WeakReference(input)
         scope.launch {
             val country = default {
                 getCountries().findCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
@@ -139,12 +140,12 @@ class PhoneNumberKit private constructor(
                 is State.Ready -> {}
                 is State.Attached -> {
                     getFlagIcon(state.country.iso2)?.let { icon ->
-                        input?.startIconDrawable = icon
+                        input.get()?.startIconDrawable = icon
                     }
                     if (rawInput.isNullOrEmpty() || rawInput?.length.orZero() < 5) {
                         rawInput = state.country.code.prependPlus()
                     }
-                    input?.editText?.filters = arrayOf(
+                    input.get()?.editText?.filters = arrayOf(
                         InputFilter.LengthFilter(state.pattern.length)
                     )
                 }
@@ -178,8 +179,8 @@ class PhoneNumberKit private constructor(
         itemLayout: Int = R.layout.item_country_picker,
         searchEnabled: Boolean = false
     ) {
-        input?.isStartIconCheckable = true
-        input?.setStartIconOnClickListener {
+        input.get()?.isStartIconCheckable = true
+        input.get()?.setStartIconOnClickListener {
             CountryPickerBottomSheet.newInstance(
                 CountryPickerArguments(
                     itemLayout,
