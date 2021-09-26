@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
@@ -16,6 +17,7 @@ import me.ibrahimsn.lib.api.Phone
 import me.ibrahimsn.lib.internal.core.Proxy
 import me.ibrahimsn.lib.internal.ext.*
 import me.ibrahimsn.lib.internal.io.FileReader
+import me.ibrahimsn.lib.internal.model.CaretString
 import me.ibrahimsn.lib.internal.model.State
 import me.ibrahimsn.lib.internal.pattern.CountryPattern
 import me.ibrahimsn.lib.internal.ui.CountryPickerArguments
@@ -63,6 +65,8 @@ class PhoneNumberKit private constructor(
         }
     }
 
+    var caretPos = 0
+
     override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
         super.onTextChanged(text, start, before, count)
         val state = this@PhoneNumberKit.state.value
@@ -80,8 +84,19 @@ class PhoneNumberKit private constructor(
                 }
             }
 
+            val isDeletion: Boolean = before > 0 && count == 0
+            val caretGravity = if (isDeletion) {
+                CaretString.CaretGravity.BACKWARD
+            } else {
+                CaretString.CaretGravity.FORWARD
+            }
+
             if (!text.isNullOrEmpty()) {
-                afterText = state.pattern.apply(text)
+                val caretString = CaretString(text.toString(), start, caretGravity)
+                val result = state.pattern.apply(caretString)
+
+                caretPos = result.caretString.caretPosition
+                afterText = result.caretString.text
             }
         }
     }
@@ -90,7 +105,7 @@ class PhoneNumberKit private constructor(
         super.afterTextChanged(text)
         this.input.get()?.editText?.removeTextChangedListener(this)
         text?.replace(0, text.length, this.afterText)
-        this.input.get()?.editText?.setSelection(text?.length ?: 0)
+        this.input.get()?.editText?.setSelection(caretPos)
         this.input.get()?.editText?.addTextChangedListener(this)
     }
 
@@ -126,6 +141,7 @@ class PhoneNumberKit private constructor(
 
     fun attachToInput(input: TextInputLayout, countryIso2: String) {
         this.input = WeakReference(input)
+
         scope.launch {
             val country = default {
                 getCountries().findCountry(countryIso2.trim().lowercase(Locale.ENGLISH))
