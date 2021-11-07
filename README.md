@@ -22,6 +22,7 @@ Create a phoneNumberKit instance and attach it to an editTextLayout. That's all 
 
 ```kotlin
 val phoneNumberKit = PhoneNumberKit.Builder(this)
+    .setIconEnabled(true)
     .admitCountries(listOf("tr", "ca", "de")) // List only those county formats
     .excludeCountries(listOf("tr", "ca")) // Exclude those county formats
     .build()
@@ -152,7 +153,7 @@ allprojects {
 Step 2. Add the dependency
 ```
 dependencies {
-    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.7.6'
+    implementation 'com.github.ibrahimsn98:PhoneNumberKit:2.0.0'
 }
 ```
 

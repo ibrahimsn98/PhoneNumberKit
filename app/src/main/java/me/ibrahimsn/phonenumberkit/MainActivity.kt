@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val phoneNumberKit = PhoneNumberKit.Builder(this)
+            .setIconEnabled(true)
             .build()
 
         // To attach an editTextLayout
