@@ -55,6 +55,7 @@
         android:id="@+id/recyclerView"
         tools:listitem="@layout/item_country_picker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:minHeight="200dp" />
 
 </LinearLayout>
