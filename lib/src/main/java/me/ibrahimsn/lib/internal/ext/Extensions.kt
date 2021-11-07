@@ -1,21 +1,18 @@
 package me.ibrahimsn.lib.internal.ext
 
-import me.ibrahimsn.lib.internal.model.Character
 import me.ibrahimsn.lib.internal.model.State
+
+private const val CHAR_PLUS = "+"
 
 internal fun CharSequence?.prependPlus(): String {
     return StringBuilder()
-        .append(Character.PLUS.char)
+        .append(CHAR_PLUS)
         .append(this)
         .toString()
 }
 
-internal fun Int?.orZero(): Int {
-    return this ?: 0
-}
-
 internal fun CharSequence?.startsWithPlus(): Boolean {
-    return this?.startsWith(Character.PLUS.char) == true
+    return this?.startsWith(CHAR_PLUS) == true
 }
 
 internal fun String?.clearSpaces(): String? {

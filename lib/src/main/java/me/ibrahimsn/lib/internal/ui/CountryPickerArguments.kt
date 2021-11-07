@@ -8,5 +8,5 @@ data class CountryPickerArguments(
     val itemLayout: Int,
     val isSearchEnabled: Boolean,
     val excludedCountries: List<String>,
-    val admittedCountries: List<String>
+    val admittedCountries: List<String>,
 ) : Parcelable

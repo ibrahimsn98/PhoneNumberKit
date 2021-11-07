@@ -9,7 +9,6 @@ import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.bottom_sheet_country_picker.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -19,6 +18,7 @@ import kotlinx.coroutines.launch
 import me.ibrahimsn.lib.PhoneNumberKit
 import me.ibrahimsn.lib.R
 import me.ibrahimsn.lib.api.Country
+import me.ibrahimsn.lib.databinding.BottomSheetCountryPickerBinding
 import me.ibrahimsn.lib.internal.ext.default
 import me.ibrahimsn.lib.internal.ext.showIf
 import me.ibrahimsn.lib.internal.ext.toCountryList
@@ -30,6 +30,8 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
     private val supervisorJob = SupervisorJob()
 
     private val scope = CoroutineScope(supervisorJob + Dispatchers.Main)
+
+    private lateinit var binding: BottomSheetCountryPickerBinding
 
     var onCountrySelectedListener: ((Country) -> Unit)? = null
 
@@ -54,12 +56,9 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(
-            R.layout.bottom_sheet_country_picker,
-            container,
-            false
-        )
+    ): View {
+        binding = BottomSheetCountryPickerBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -69,7 +68,7 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
         fetchData()
     }
 
-    private fun initView() {
+    private fun initView() = with(binding) {
         searchView.showIf(args.isSearchEnabled)
 
         recyclerView.apply {
@@ -126,7 +125,7 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
                     it.code.toString().startsWith(query) ||
                             it.name.lowercase(Locale.ROOT).contains(query.lowercase(Locale.ROOT))
                 }
-                recyclerView.post {
+                binding.recyclerView.post {
                     itemAdapter.setup(filtered)
                 }
             }
@@ -134,10 +133,13 @@ class CountryPickerBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
-        const val TAG = "tagCountryPickerBottomSheet"
+
+        const val TAG = "countryPickerBottomSheet"
         private const val BUNDLE_ARGS = "bundleArgs"
 
-        fun newInstance(args: CountryPickerArguments) = CountryPickerBottomSheet().apply {
+        fun newInstance(
+            args: CountryPickerArguments
+        ) = CountryPickerBottomSheet().apply {
             arguments = bundleOf(BUNDLE_ARGS to args)
         }
     }

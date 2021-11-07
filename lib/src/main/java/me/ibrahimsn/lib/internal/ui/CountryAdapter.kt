@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import me.ibrahimsn.lib.api.Country
 import me.ibrahimsn.lib.R
 
 class CountryAdapter(
-    @LayoutRes private var itemLayout: Int
+    @LayoutRes private var itemLayout: Int,
 ) : RecyclerView.Adapter<CountryAdapter.ItemViewHolder>() {
 
     private val items = mutableListOf<Country>()
@@ -35,9 +36,10 @@ class CountryAdapter(
     override fun getItemCount(): Int = items.size
 
     fun setup(items: List<Country>) {
+        val diffCallback = DiffUtil.calculateDiff(ItemDiffCallback(this.items, items))
         this.items.clear()
         this.items.addAll(items)
-        notifyDataSetChanged()
+        diffCallback.dispatchUpdatesTo(this)
     }
 
     inner class ItemViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -69,6 +71,24 @@ class CountryAdapter(
                 "drawable",
                 itemView.context.packageName
             )
+        }
+    }
+
+    inner class ItemDiffCallback(
+        private val oldItems: List<Country>,
+        private val newItems: List<Country>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize() = oldItems.size
+
+        override fun getNewListSize() = newItems.size
+
+        override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean {
+            return oldItems[oldPos].iso2 == newItems[newPos].iso2
+        }
+
+        override fun areContentsTheSame(oldPos: Int, newPos: Int): Boolean {
+            return oldItems[oldPos].iso2 == newItems[newPos].iso2
         }
     }
 }
