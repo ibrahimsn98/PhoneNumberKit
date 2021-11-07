@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:paddingVertical="12dp"
     android:paddingHorizontal="18dp"
+    android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imageViewFlag"
-        tools:src="@drawable/country_flag_tr"
         android:layout_width="22dp"
-        android:layout_height="22dp" />
+        android:layout_height="22dp"
+        tools:src="@drawable/country_flag_tr" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewName"
         android:layout_width="0dp"
-        tools:text="Turkey (Türkiye)"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginStart="16dp"
@@ -26,7 +26,8 @@
         android:singleLine="true"
         android:maxLines="1"
         android:ellipsize="end"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        tools:text="Turkey (Türkiye)" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewCode"

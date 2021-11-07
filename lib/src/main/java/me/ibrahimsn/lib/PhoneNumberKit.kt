@@ -2,180 +2,194 @@ package me.ibrahimsn.lib
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.text.InputFilter
 import android.text.InputType
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
-import me.ibrahimsn.lib.Constants.CHAR_DASH
-import me.ibrahimsn.lib.Constants.CHAR_PLUS
-import me.ibrahimsn.lib.Constants.CHAR_SPACE
-import me.ibrahimsn.lib.Constants.KEY_DASH
-import me.ibrahimsn.lib.Constants.KEY_DIGIT
-import me.ibrahimsn.lib.Constants.KEY_SPACE
-import me.ibrahimsn.lib.bottomsheet.CountryPickerBottomSheet
-import me.ibrahimsn.lib.core.Core
-import me.ibrahimsn.lib.util.*
+import com.redmadrobot.inputmask.MaskedTextChangedListener
+import com.redmadrobot.inputmask.MaskedTextChangedListener.Companion.installOn
+import com.redmadrobot.inputmask.helper.AffinityCalculationStrategy
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import me.ibrahimsn.lib.api.Country
+import me.ibrahimsn.lib.api.Phone
+import me.ibrahimsn.lib.internal.core.Proxy
+import me.ibrahimsn.lib.internal.ext.*
+import me.ibrahimsn.lib.internal.io.FileReader
+import me.ibrahimsn.lib.internal.model.State
+import me.ibrahimsn.lib.internal.pattern.CountryPattern
+import me.ibrahimsn.lib.internal.ui.CountryPickerArguments
+import me.ibrahimsn.lib.internal.ui.CountryPickerBottomSheet
+import java.lang.ref.WeakReference
 import java.util.*
 
-class PhoneNumberKit(private val context: Context) {
+class PhoneNumberKit private constructor(
+    private val context: Context,
+    private val isIconEnabled: Boolean,
+    private val excludedCountries: List<String>,
+    private val admittedCountries: List<String>,
+) {
 
-    private val core = Core(context)
+    private val supervisorJob = SupervisorJob()
 
-    private var input: TextInputLayout? = null
+    private val scope = CoroutineScope(supervisorJob + Dispatchers.Main)
 
-    private var country: Country? = null
+    private val proxy: Proxy by lazy { Proxy(context) }
 
-    private var format: String = ""
+    private val state: MutableStateFlow<State> = MutableStateFlow(State.Ready)
 
-    private var hasManualCountry = false
+    private var input: WeakReference<TextInputLayout> = WeakReference(null)
 
-    private var rawInput: CharSequence?
-        get() = input?.editText?.text
+    private val countriesCache = mutableListOf<Country>()
+
+    private var inputValue: CharSequence?
+        get() = input.get()?.editText?.text
         set(value) {
-            input?.tag = Constants.VIEW_TAG
-            input?.editText?.clear()
-            input?.editText?.append(value)
-            input?.tag = null
+            input.get()?.editText?.setText(value)
         }
 
-    val isValid: Boolean get() = validate(rawInput)
+    val isValid: Boolean get() = validate(inputValue)
 
-    private val textWatcher = object : PhoneNumberTextWatcher() {
-        override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
-            if (input?.tag != Constants.VIEW_TAG) {
-                val parsedNumber = core.parsePhoneNumber(
-                    rawInput.toString().clearSpaces(),
-                    country?.iso2
+    init {
+        scope.launch(Dispatchers.IO) {
+            countriesCache.addAll(getCountries())
+        }
+    }
+
+    private var textChangedListener: MaskedTextChangedListener? = null
+
+    private fun setupListener(editText: EditText, pattern: String) {
+        editText.removeTextChangedListener(textChangedListener)
+        textChangedListener = installOn(
+            editText,
+            pattern,
+            emptyList(),
+            AffinityCalculationStrategy.WHOLE_STRING,
+            object : MaskedTextChangedListener.ValueListener {
+                override fun onTextChanged(
+                    maskFilled: Boolean,
+                    extractedValue: String,
+                    formattedValue: String
+                ) {
+                    val state = this@PhoneNumberKit.state.value
+                    if (state is State.Attached) {
+                        val parsedNumber = proxy.parsePhoneNumber(
+                            extractedValue.clearSpaces(),
+                            state.country.iso2
+                        )
+
+                        if (state.country.code != parsedNumber?.countryCode) {
+                            val country = countriesCache.findCountry(parsedNumber?.countryCode)
+                            if (country != null) {
+                                setCountry(country)
+                            }
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    private fun setCountry(countryIso2: String) = scope.launch {
+        val country = default {
+            getCountries().findCountry(
+                countryIso2.trim().lowercase(Locale.ENGLISH)
+            )
+        } ?: return@launch
+        setCountry(country)
+    }
+
+    private fun setCountry(country: Country) {
+        val formattedNumber = proxy.formatPhoneNumber(
+            proxy.getExampleNumber(country.iso2)
+        )
+        val pattern = CountryPattern.create(
+            formattedNumber.orEmpty()
+        )
+        state.value = State.Attached(
+            country = country,
+            pattern = pattern
+        )
+    }
+
+    fun attachToInput(
+        input: TextInputLayout,
+        defaultCountry: Int,
+    ) {
+        this.input = WeakReference(input)
+        scope.launch {
+            val country = default {
+                getCountries().findCountry(defaultCountry)
+            }
+            if (country != null) {
+                attachToInput(input, country)
+            }
+        }
+    }
+
+    fun attachToInput(
+        input: TextInputLayout,
+        countryIso2: String,
+    ) {
+        this.input = WeakReference(input)
+        scope.launch {
+            val country = default {
+                getCountries().findCountry(
+                    countryIso2.trim().lowercase(Locale.ENGLISH)
                 )
-
-                // Update country flag and mask if detected as a different one
-                if (country == null || country?.countryCode != parsedNumber?.countryCode) {
-                    if (!hasManualCountry) {
-                        setCountry(getCountry(parsedNumber?.countryCode))
-                    }
-                }
-
-                if (count != 0) {
-                    applyFormat()
-                }
-
-                validate(rawInput)
+            }
+            if (country != null) {
+                attachToInput(input, country)
             }
         }
     }
 
-    private fun applyFormat() {
-        rawInput?.let { raw ->
-            // Clear all of the non-digit characters from the phone number
-            val pureNumber = raw.filter { i -> i.isDigit() }.toMutableList()
-
-            // Add plus to beginning of the number
-            pureNumber.add(0, CHAR_PLUS)
-
-            for (i in format.indices) {
-                if (pureNumber.size > i) {
-                    // Put required format spaces
-                    if (format[i] == KEY_SPACE && pureNumber[i] != CHAR_SPACE) {
-                        pureNumber.add(i, CHAR_SPACE)
-                        continue
+    private fun collectState() = scope.launch {
+        state.collect { state ->
+            when (state) {
+                is State.Ready -> {}
+                is State.Attached -> {
+                    if (isIconEnabled) {
+                        getFlagIcon(state.country.iso2)?.let { icon ->
+                            input.get()?.startIconDrawable = icon
+                        }
                     }
-
-                    // Put required format dashes
-                    if (format[i] == KEY_DASH && pureNumber[i] != CHAR_DASH) {
-                        pureNumber.add(i, CHAR_DASH)
-                        continue
+                    input.get()?.editText?.let { editText ->
+                        setupListener(editText, state.pattern)
+                    }
+                    if (inputValue.isNullOrEmpty()) {
+                        inputValue = state.country.code.toString()
                     }
                 }
-            }
-
-            if (pureNumber.size > 1) {
-                rawInput = pureNumber.toRawString()
             }
         }
     }
 
-    private fun setCountry(country: Country?, isManual: Boolean = false, prefill: Boolean = false) {
-        country?.let {
-            this.country = country
-
-            // Setup country icon
-            getFlagIcon(country.iso2)?.let { icon ->
-                input?.startIconDrawable = icon
-            }
-
-            // Set text length limit according to the example phone number
-            core.getExampleNumber(country.iso2)?.let { example ->
-                if (isManual) {
-                    hasManualCountry = true
-                }
-                if (isManual || prefill) {
-                    rawInput = if (country.countryCode != example.countryCode) {
-                        example.countryCode.prependPlus() + country.countryCode
-                    } else {
-                        country.countryCode.prependPlus()
-                    }
-                }
-            }
-
-            core.formatPhoneNumber(core.getExampleNumber(country.iso2))?.let { number ->
-                input?.editText?.filters = arrayOf(InputFilter.LengthFilter(number.length))
-                format = createNumberFormat(number)
-                applyFormat()
-            }
+    private suspend fun getCountries() = io {
+        if (countriesCache.isEmpty()) {
+            FileReader.readAssetFile(context, ASSET_FILE_NAME).toCountryList()
+        } else {
+            countriesCache
         }
     }
 
-    fun updateCountry(countryIso2: String) {
-        setCountry(
-            country = getCountry(countryIso2.trim().toLowerCase(Locale.ENGLISH)) ?: Countries.list[0],
-            prefill = true
-        )
+    private fun clearInputValue() {
+        inputValue = ""
     }
 
-    // Creates a pattern like +90 506 555 55 55 -> +0010001000100100
-    private fun createNumberFormat(number: String): String {
-        var format = number.replace("(\\d)".toRegex(), KEY_DIGIT.toString())
-        format = format.replace("(\\s)".toRegex(), KEY_SPACE.toString())
-        return format
-    }
-
-    /**
-     * Attaches to textInputLayout
-     */
-    fun attachToInput(input: TextInputLayout, defaultCountry: Int) {
-        this.input = input
+    private fun attachToInput(
+        input: TextInputLayout,
+        country: Country,
+    ) {
         input.editText?.inputType = InputType.TYPE_CLASS_PHONE
-        input.editText?.addTextChangedListener(textWatcher)
 
-        input.isStartIconVisible = true
-        input.isStartIconCheckable = true
+        input.isStartIconVisible = isIconEnabled
         input.setStartIconTintList(null)
 
-        // Set initial country
-        setCountry(
-            country = getCountry(defaultCountry) ?: Countries.list[0],
-            prefill = true
-        )
-    }
-
-    /**
-     * Attaches to textInputLayout
-     */
-    fun attachToInput(input: TextInputLayout, countryIso2: String) {
-        this.input = input
-        input.editText?.inputType = InputType.TYPE_CLASS_PHONE
-        input.editText?.addTextChangedListener(textWatcher)
-
-        input.isStartIconVisible = true
-        input.isStartIconCheckable = true
-        input.setStartIconTintList(null)
-
-        // Set initial country
-        setCountry(
-            country = getCountry(countryIso2.trim().toLowerCase(Locale.ENGLISH)) ?: Countries.list[0],
-            prefill = true
-        )
+        collectState()
+        setCountry(country.iso2)
     }
 
     /**
@@ -184,13 +198,21 @@ class PhoneNumberKit(private val context: Context) {
     fun setupCountryPicker(
         activity: AppCompatActivity,
         itemLayout: Int = R.layout.item_country_picker,
-        searchEnabled: Boolean = false
+        searchEnabled: Boolean = false,
     ) {
-        input?.setStartIconOnClickListener {
-            CountryPickerBottomSheet.newInstance().apply {
-                setup(itemLayout, searchEnabled)
+        input.get()?.isStartIconCheckable = true
+        input.get()?.setStartIconOnClickListener {
+            CountryPickerBottomSheet.newInstance(
+                CountryPickerArguments(
+                    itemLayout,
+                    searchEnabled,
+                    excludedCountries,
+                    admittedCountries
+                )
+            ).apply {
                 onCountrySelectedListener = { country ->
-                    setCountry(country, true)
+                    clearInputValue()
+                    setCountry(country)
                 }
                 show(
                     activity.supportFragmentManager,
@@ -204,7 +226,7 @@ class PhoneNumberKit(private val context: Context) {
      * Parses raw phone number into phone object
      */
     fun parsePhoneNumber(number: String?, defaultRegion: String?): Phone? {
-        core.parsePhoneNumber(number, defaultRegion)?.let { phone ->
+        proxy.parsePhoneNumber(number, defaultRegion)?.let { phone ->
             return Phone(
                 nationalNumber = phone.nationalNumber,
                 countryCode = phone.countryCode,
@@ -219,14 +241,14 @@ class PhoneNumberKit(private val context: Context) {
      * Formats raw phone number into international phone
      */
     fun formatPhoneNumber(number: String?, defaultRegion: String?): String? {
-        return core.formatPhoneNumber(core.parsePhoneNumber(number, defaultRegion))
+        return proxy.formatPhoneNumber(proxy.parsePhoneNumber(number, defaultRegion))
     }
 
     /**
      * Provides an example phone number according to country iso2 code
      */
     fun getExampleNumber(iso2: String?): Phone? {
-        core.getExampleNumber(iso2)?.let { phone ->
+        proxy.getExampleNumber(iso2)?.let { phone ->
             return Phone(
                 nationalNumber = phone.nationalNumber,
                 countryCode = phone.countryCode,
@@ -255,32 +277,67 @@ class PhoneNumberKit(private val context: Context) {
         }
     }
 
-    /**
-     * Provides country for given country code
-     */
-    fun getCountry(countryCode: Int?): Country? {
-        for (country in Countries.list) {
-            if (country.countryCode == countryCode) {
-                return country
-            }
-        }
-        return null
+    private fun List<Country>.findCountry(
+        countryCode: Int?
+    ) = this.filter {
+        admittedCountries.isEmpty() || admittedCountries.contains(it.iso2)
+    }.filterNot {
+        excludedCountries.contains(it.iso2)
+    }.firstOrNull {
+        it.code == countryCode
     }
 
-    /**
-     * Provides country for given country iso2
-     */
-    fun getCountry(countryIso2: String?): Country? {
-        for (country in Countries.list) {
-            if (country.iso2 == countryIso2) {
-                return country
-            }
-        }
-        return null
+    private fun List<Country>.findCountry(
+        countryIso2: String?
+    ) = this.filter {
+        admittedCountries.isEmpty() || admittedCountries.contains(it.iso2)
+    }.filterNot {
+        excludedCountries.contains(it.iso2)
+    }.firstOrNull {
+        it.iso2 == countryIso2
     }
 
     private fun validate(number: CharSequence?): Boolean {
         if (number == null) return false
-        return core.validateNumber(number.toString(), country?.iso2)
+        return state.value.doIfAttached {
+            proxy.validateNumber(number.toString(), country.iso2)
+        } ?: false
+    }
+
+    companion object {
+        const val ASSET_FILE_NAME = "countries.json"
+    }
+
+    class Builder(private val context: Context) {
+
+        private var isIconEnabled: Boolean = true
+
+        private var excludedCountries: List<String>? = null
+
+        private var admittedCountries: List<String>? = null
+
+        fun setIconEnabled(isEnabled: Boolean): Builder {
+            this.isIconEnabled = isEnabled
+            return this
+        }
+
+        fun excludeCountries(countries: List<String>): Builder {
+            this.excludedCountries = countries
+            return this
+        }
+
+        fun admitCountries(countries: List<String>): Builder {
+            this.admittedCountries = countries
+            return this
+        }
+
+        fun build(): PhoneNumberKit {
+            return PhoneNumberKit(
+                context,
+                isIconEnabled,
+                excludedCountries.orEmpty(),
+                admittedCountries.orEmpty()
+            )
+        }
     }
 }

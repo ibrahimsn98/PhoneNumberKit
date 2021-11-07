@@ -19,20 +19,33 @@ Android **Kotlin** library to parse and format international phone numbers. Base
 ## Usage
 
 Create a phoneNumberKit instance and attach it to an editTextLayout. That's all you have to do.
-```kotlin
-val phoneNumberKit = PhoneNumberKit(this) // Requires context
 
+```kotlin
+val phoneNumberKit = PhoneNumberKit.Builder(this)
+    .setIconEnabled(true)
+    .admitCountries(listOf("tr", "ca", "de")) // List only those county formats
+    .excludeCountries(listOf("tr", "ca")) // Exclude those county formats
+    .build()
+
+phoneNumberKit.attachToInput(textField, "tr")
+// OR
 phoneNumberKit.attachToInput(textField, 1)
 ```
+
 To setup with country code selection bottom sheet
+
 ```kotlin
-phoneNumberKit.setupCountryPicker(this) // Requires activity
+phoneNumberKit.setupCountryPicker(this) // Requires activity context
 ```
+
 To get an example phone number for given **iso2 code**
+
 ```kotlin
 val exampleNumber = phoneNumberKit.getExampleNumber("tr")
 ```
+
 To parse raw text to phone number and receive country code, national number
+
 ```kotlin
 val parsedNumber = phoneNumberKit.parsePhoneNumber(
     number = "1266120000",
@@ -43,29 +56,32 @@ parsedNumber?.nationalNumber
 parsedNumber?.countryCode
 parsedNumber?.numberOfLeadingZeros
 ```
+
 To convert raw text to formatted phone number string
+
 ```kotlin
 val formattedNumber = phoneNumberKit.formatPhoneNumber(
     number = "1266120000",
     defaultRegion = "us"
 )
 ```
+
 To receive a country **flag icon** for given iso2 code
+
 ```kotlin
 val flag = phoneNumberKit.getFlagIcon("ca")
-```
-To receive country name or iso2 code from given **country code**
-```kotlin
-val country = phoneNumberKit.getCountry(90)
 ```
 
 ## Usage with Custom Item Layout
 
 Add your custom item layout resource as a parameter
+
 ```kotlin
 phoneNumberKit.setupCountryPicker(this, R.layout.my_item_layout, searchEnabled = true)
 ```
+
 You need to use below view ids in your layout file
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -137,7 +153,7 @@ allprojects {
 Step 2. Add the dependency
 ```
 dependencies {
-    implementation 'com.github.ibrahimsn98:PhoneNumberKit:1.7.5'
+    implementation 'com.github.ibrahimsn98:PhoneNumberKit:2.0.0'
 }
 ```
 
