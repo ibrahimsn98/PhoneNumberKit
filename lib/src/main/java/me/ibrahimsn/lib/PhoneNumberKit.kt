@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
@@ -28,6 +27,7 @@ import java.util.*
 
 class PhoneNumberKit private constructor(
     private val context: Context,
+    private val isIconEnabled: Boolean,
     private val excludedCountries: List<String>,
     private val admittedCountries: List<String>
 ) : PhoneNumberTextWatcher() {
@@ -43,6 +43,8 @@ class PhoneNumberKit private constructor(
     private var input: WeakReference<TextInputLayout> = WeakReference(null)
 
     private val countriesCache = mutableListOf<Country>()
+
+    private var caretPos = 0
 
     private var afterText = ""
 
@@ -64,8 +66,6 @@ class PhoneNumberKit private constructor(
             countriesCache.addAll(getCountries())
         }
     }
-
-    var caretPos = 0
 
     override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
         super.onTextChanged(text, start, before, count)
@@ -93,7 +93,7 @@ class PhoneNumberKit private constructor(
 
             if (!text.isNullOrEmpty()) {
                 val caretString = CaretString(text.toString(), start, caretGravity)
-                val result = state.pattern.apply(caretString)
+                val result = state.pattern.apply(caretString, before, count)
 
                 caretPos = result.caretString.caretPosition
                 afterText = result.caretString.text
@@ -129,7 +129,10 @@ class PhoneNumberKit private constructor(
         )
     }
 
-    fun attachToInput(input: TextInputLayout, defaultCountry: Int) {
+    fun attachToInput(
+        input: TextInputLayout,
+        defaultCountry: Int,
+    ) {
         this.input = WeakReference(input)
         scope.launch {
             val country = default {
@@ -139,7 +142,10 @@ class PhoneNumberKit private constructor(
         }
     }
 
-    fun attachToInput(input: TextInputLayout, countryIso2: String) {
+    fun attachToInput(
+        input: TextInputLayout,
+        countryIso2: String,
+    ) {
         this.input = WeakReference(input)
 
         scope.launch {
@@ -155,8 +161,10 @@ class PhoneNumberKit private constructor(
             when (state) {
                 is State.Ready -> {}
                 is State.Attached -> {
-                    getFlagIcon(state.country.iso2)?.let { icon ->
-                        input.get()?.startIconDrawable = icon
+                    if (isIconEnabled) {
+                        getFlagIcon(state.country.iso2)?.let { icon ->
+                            input.get()?.startIconDrawable = icon
+                        }
                     }
                     if (rawInput.isNullOrEmpty() || rawInput?.length.orZero() < 5) {
                         rawInput = state.country.code.prependPlus()
@@ -176,11 +184,14 @@ class PhoneNumberKit private constructor(
         } else countriesCache
     }
 
-    private fun attachToInput(input: TextInputLayout, country: Country) {
+    private fun attachToInput(
+        input: TextInputLayout,
+        country: Country,
+    ) {
         input.editText?.inputType = InputType.TYPE_CLASS_PHONE
         input.editText?.addTextChangedListener(this)
 
-        input.isStartIconVisible = true
+        input.isStartIconVisible = isIconEnabled
         input.setStartIconTintList(null)
 
         collectState()
@@ -193,7 +204,7 @@ class PhoneNumberKit private constructor(
     fun setupCountryPicker(
         activity: AppCompatActivity,
         itemLayout: Int = R.layout.item_country_picker,
-        searchEnabled: Boolean = false
+        searchEnabled: Boolean = false,
     ) {
         input.get()?.isStartIconCheckable = true
         input.get()?.setStartIconOnClickListener {
@@ -304,9 +315,16 @@ class PhoneNumberKit private constructor(
 
     class Builder(private val context: Context) {
 
+        private var isIconEnabled: Boolean = true
+
         private var excludedCountries: List<String>? = null
 
         private var admittedCountries: List<String>? = null
+
+        fun setIconEnabled(isEnabled: Boolean): Builder {
+            this.isIconEnabled = isEnabled
+            return this
+        }
 
         fun excludeCountries(countries: List<String>): Builder {
             this.excludedCountries = countries
@@ -321,6 +339,7 @@ class PhoneNumberKit private constructor(
         fun build(): PhoneNumberKit {
             return PhoneNumberKit(
                 context,
+                isIconEnabled,
                 excludedCountries.orEmpty(),
                 admittedCountries.orEmpty()
             )

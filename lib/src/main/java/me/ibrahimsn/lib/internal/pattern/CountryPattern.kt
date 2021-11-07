@@ -1,6 +1,5 @@
 package me.ibrahimsn.lib.internal.pattern
 
-import android.util.Log
 import me.ibrahimsn.lib.internal.model.CaretString
 import me.ibrahimsn.lib.internal.model.Character
 
@@ -11,49 +10,64 @@ class CountryPattern private constructor(
     val length: Int
         get() = pattern.size
 
-    override fun apply(number: CaretString): PatternResult {
+    override fun apply(number: CaretString, before: Int, count: Int): PatternResult {
         val numberArr = number.text.filter { i -> i.isDigit() }
-        var cursor = 0
 
+        var cursor = 0
         val currentCaretPos = number.caretPosition
-        var appendedCount = 0
-        var removedCount = 0
 
         val text = StringBuilder().apply {
-            pattern.forEachIndexed { index, key ->
+            pattern.forEachIndexed { _, key ->
                 if (cursor < numberArr.length) when (key) {
                     Character.PLUS.key -> {
                         append(Character.PLUS.char)
-                        if (index >= currentCaretPos) appendedCount++
                     }
                     Character.SPACE.key -> {
                         append(Character.SPACE.char)
-                        if (index >= currentCaretPos) appendedCount++
                     }
+
                     Character.DASH.key -> {
                         append(Character.DASH.char)
-                        if (index >= currentCaretPos) appendedCount++
                     }
                     Character.DIGIT.key -> {
                         append(numberArr[cursor++])
-                        Log.d("###", "i: $index, start: $currentCaretPos")
-                        if (index >= currentCaretPos) appendedCount++
                     }
                 }
             }
         }
 
-        if (text.length < number.text.length) {
-            removedCount = number.text.length - text.length
-        }
+        val extraAppends = calculateExtraAppends(currentCaretPos, count)
+        val extraRemovals = calculateExtraRemovals(currentCaretPos, before)
 
         return PatternResult(
             CaretString(
                 text = text.toString(),
-                caretPosition = currentCaretPos + appendedCount - removedCount,
+                caretPosition = number.caretPosition + count + extraAppends - extraRemovals,
                 caretGravity = number.caretGravity
             )
         )
+    }
+
+    private fun calculateExtraAppends(currentPos: Int, appendedCount: Int): Int {
+        var appends = 0
+        var cursor = 0
+        for (i in currentPos until pattern.size) {
+            if (cursor < appendedCount) {
+                if (pattern[i] != Character.DIGIT.key) appends++ else cursor++
+            }
+        }
+        return appends
+    }
+
+    private fun calculateExtraRemovals(currentPos: Int, removedCount: Int): Int {
+        var removals = 0
+        var cursor = 0
+        for (i in currentPos - 1 downTo 0) {
+            if (cursor < removedCount) {
+                if (pattern[i] != Character.DIGIT.key) removals++ else cursor++
+            }
+        }
+        return removals
     }
 
     companion object {
