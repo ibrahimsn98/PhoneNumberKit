@@ -14,9 +14,3 @@ internal suspend fun <T> io(
 ) = withContext(Dispatchers.IO) {
     block.invoke()
 }
-
-internal suspend fun <T> main(
-    block: suspend () -> T
-) = withContext(Dispatchers.Main) {
-    block.invoke()
-}

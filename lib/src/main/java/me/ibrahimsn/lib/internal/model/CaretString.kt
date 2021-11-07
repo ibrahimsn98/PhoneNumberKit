@@ -1,7 +1,7 @@
 package me.ibrahimsn.lib.internal.model
 
 data class CaretString(
-    val text: String,
+    val text: List<Char>,
     val caretPosition: Int,
     val caretGravity: CaretGravity
 ) {

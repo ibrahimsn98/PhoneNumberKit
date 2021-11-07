@@ -9,7 +9,7 @@ object FileReader {
         return try {
             return context.assets.open(name)
                 .bufferedReader()
-                .use{ it.readText() }
+                .use { it.readText() }
         } catch (e: IOException) {
             null
         }

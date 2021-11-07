@@ -10,13 +10,6 @@ internal fun CharSequence?.prependPlus(): String {
         .toString()
 }
 
-internal fun Int.prependPlus(): String {
-    return StringBuilder()
-        .append(Character.PLUS.char)
-        .append(this)
-        .toString()
-}
-
 internal fun Int?.orZero(): Int {
     return this ?: 0
 }
@@ -27,14 +20,6 @@ internal fun CharSequence?.startsWithPlus(): Boolean {
 
 internal fun String?.clearSpaces(): String? {
     return this?.replace("\\s+", "")
-}
-
-internal fun <T> Collection<T>.toRawString(): String {
-    return this.joinToString("")
-}
-
-internal fun CharArray.toRawString(): String {
-    return this.joinToString("")
 }
 
 internal fun <T> State.doIfAttached(block: State.Attached.() -> T): T? {
