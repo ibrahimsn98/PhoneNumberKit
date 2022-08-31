@@ -2,4 +2,5 @@
 <resources>
     <string name="search_hint">Type country code or name…</string>
     <string name="bottom_sheet_title">Country Code</string>
+    <string name="bottom_sheet_query_hint">Search country code</string>
 </resources>
