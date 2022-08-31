@@ -44,7 +44,7 @@
             android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:queryHint="Search country code"
+            app:queryHint="@string/bottom_sheet_query_hint"
             app:iconifiedByDefault="false"
             app:queryBackground="@null"
             app:submitBackground="@null" />
