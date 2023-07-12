@@ -18,7 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/bottom_sheet_title"
+            android:text="@string/phone_number_bottom_sheet_title"
             android:textSize="16sp" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -44,7 +44,7 @@
             android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:queryHint="@string/bottom_sheet_query_hint"
+            app:queryHint="@string/phone_number_bottom_sheet_query_hint"
             app:iconifiedByDefault="false"
             app:queryBackground="@null"
             app:submitBackground="@null" />
