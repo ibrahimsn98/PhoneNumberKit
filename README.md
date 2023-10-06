@@ -1,7 +1,7 @@
 # PhoneNumberKit
 Android **Kotlin** library to parse and format international phone numbers. Based on Google's libphonenumber library.
 
-[![](https://jitpack.io/v/ibrahimsn98/PhoneNumberKit.svg)](https://jitpack.io/#ibrahimsn98/PhoneNumberKit)
+[![](https://jitpack.io/v/dmitry-lashin-dev/PhoneNumberKitFix.svg)](https://jitpack.io/#dmitry-lashin-dev/PhoneNumberKitFix)
 
 
 ## Features
